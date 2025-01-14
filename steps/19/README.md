@@ -1,23 +1,23 @@
-# Creating Our Runtime
+# 创建我们的运行时(Runtime)
 
-We have now established two different Pallets for our blockchain: the System and Balances Pallet.
+现在我们已经为我们的区块链建立了两个不同的 Pallet ： System Pallet 和 Balances Pallet。
 
-How do these pallets work together to create a unified blockchain system?
+这些 Pallet 如何协同工作以创建一个统一的区块链系统？
 
-For that, we will need to create a `Runtime`.
+为此，我们需要创建一个`Runtime`。
 
-## What is the Runtime?
+## 什么是运行时(Runtime)？
 
-Remember that there is a separation between the blockchain client and the state transition function of our blockchain.
+请记住，区块链客户端和我们区块链的状态转换函数是分开的。
 
-You can think of the runtime as the accumulation of all logic which composes your state transition function. It will combine all of your pallets into a single object, and then expose that single object as the entry point for your users to interact with.
+您可以将运行时(Runtime)视为构成状态转换函数的所有逻辑的集合。它将把您所有的 Pallet 组合成一个对象，然后将该对象作为入口点暴露给您的用户进行交互。
 
-Certainly this sounds pretty abstract, but it will make more sense as we complete this tutorial.
+当然，这听起来很抽象，但随着我们完成本教程，它会变得更加清晰。
 
-## Create the Runtime
+## 创建运行时(Runtime)
 
-Just like our Pallets, our Runtime will be represented with a simple `struct`, however in this case, the fields of our `struct` will be our Pallets!
+就像我们的 Pallet 一样，我们的运行时(Runtime)将用一个简单的`struct`表示，但是在这种情况下，我们`struct`里的成员将是我们的 Pallet ！
 
-Complete the instructions for creating a new runtime which includes our System and Balances pallets. For this, you will need to take advantage of the `new()` functions we exposed for each of the Pallets.
+完成创建一个新的运行时的说明，该运行时包括我们的 System Pallet 和 Balances Pallet 。为此，您需要利用我们为每个 Pallet 公开的`new()`函数。
 
-Make sure your code is formatted and everything is still compiling. Compiler warnings about "never read/used" are okay.
+确保您的代码格式化并且一切仍在编译。关于“从未读取/使用”的编译器警告是可以的。

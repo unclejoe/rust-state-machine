@@ -1,30 +1,26 @@
 # Derive Debug
 
-In Rust, `derive` macros provide a convenient way to automatically implement trait functionality for custom data structures.
+在 Rust 中，`derive` 宏提供了一种方便的方法来自动为自定义数据结构实现 trait 功能。
 
-## Macros
+## 宏
 
-In the most simple terms, Macros are rust code that write more rust code.
+宏是 Rust 中的一种特殊功能，允许你编写代码来生成其他代码。这有点像函数，但它们更强大，因为它们可以操作 Rust 的抽象语法树（AST）。宏可以让你的代码更简洁，避免重复，并允许你创建自己的编码规则。
 
-Macros can make your code easier to read, help avoid repetition, and even let you create your own special rules for coding in Rust.
-
-We will be using (but not writing) macros heavily near the end of this tutorial, and you will see how powerful they can be.
-
-For now, treat them as "magic".
+在本教程的后面，我们将大量使用（但不编写）宏，你将看到它们的强大之处。现在，你可以把它们看作是“魔法”。
 
 ## Traits
 
-Think of traits in Rust as shared rules for different types. They allow you to define a set of things that types must be able to do. This way, you can make sure different parts of your code follow the same rules.
+在 Rust 中，Traits 是一种定义共享行为的方式。它们允许你为不同的类型定义一组必须实现的方法。这样，你可以确保代码的不同部分遵循相同的规则。
 
-Take a look at [this example](https://doc.rust-lang.org/rust-by-example/trait.html) or re-read [the Rust Book](https://doc.rust-lang.org/book/ch10-02-traits.html) if you need a refresher on Traits.
+如果你需要复习 Traits，可以看看[这个例子](https://doc.rust-lang.org/rust-by-example/trait.html) 或重新阅读 [Rust Book](https://doc.rust-lang.org/book/ch10-02-traits.html) 中的相关章节。
 
-We will make and use custom traits later in this tutorial, but know for this step that `#[derive(Debug)]` is a macro which implements the `Debug` trait for your custom types.
+在本教程的后面，我们将创建和使用自定义 Traits，但现在你只需要知道 `#[derive(Debug)]` 是一个宏，它为你的自定义类型实现了 `Debug` Trait。
 
 ### Debug Trait
 
-The Debug trait in Rust is part of the standard library and is used to print and format values for debugging purposes. It provides a default implementation through the `#[derive(Debug)] annotation.
+`Debug` Trait 是 Rust 标准库中的一部分，用于打印和格式化值，以便于调试。它通过 `#[derive(Debug)]` 注解提供了一个默认实现。
 
-For example:
+例如：
 
 ```rust
 #[derive(Debug)]
@@ -34,25 +30,25 @@ pub struct MyStruct {
 }
 ```
 
-With the `Debug` trait derived, you can now print the `struct` to console:
+有了 `Debug` Trait 的实现，你现在可以打印 `struct` 到控制台：
 
 ```rust
 let my_instance = MyStruct { field1: 42, field2: "Hello".to_string() };
 println!("{:#?}", my_instance);
 ```
 
-The characters `:#?` help [format](https://doc.rust-lang.org/std/fmt/) the output to make it more readable.
+字符 `:#?` 有助于[格式化](https://doc.rust-lang.org/std/fmt/)输出，使其更具可读性。
 
-## Derive the Debug Trait for Your Runtime
+## 为你的运行时派生 Debug Trait
 
-This is a very simple, but helpful step!
+这是一个非常简单但很有帮助的步骤！
 
-We want to be able to print out the current state of our `Runtime` at the end of our `main` to allow us to easily inspect what it looks like and that everything is functioning as we expect.
+我们希望能够在 `main` 函数的结尾处打印出 `Runtime` 的当前状态，以便我们可以轻松检查它的外观，并确保一切按预期运行。
 
-To do this, we need to add `#[derive(Debug)]` to the `struct Runtime`.
+要做到这一点，我们需要在 `struct Runtime` 上添加 `#[derive(Debug)]`。
 
-However... `struct Runtime` is composed of `system::Pallet` and `balances::Pallet`, so these structs ALSO need to implement the Debug trait.
+然而，`struct Runtime` 是由 `system::Pallet` 和 `balances::Pallet` 组成的，因此这些结构体也需要实现 `Debug` Trait。
 
-Complete the `TODO`s across the different files in your project and print out your final runtime at the end of the `main` function.
+完成项目中不同文件中的 `TODO`，并在 `main` 函数的结尾处打印出你的最终运行时。
 
-You can use `cargo run` to see the output of your `println`. Everything should compile and run without warnings.
+你可以使用 `cargo run` 来查看 `println` 的输出。一切应该编译并运行，没有警告。

@@ -1,25 +1,25 @@
-# Introduce the System Pallet
+# 介绍 System Pallet
 
-We have basically completed the creation of a basic Balances Pallet. This is the pallet that most users will interact with.
+我们已经基本完成了基本的 Banlances Pallet 的创建。这是大多数用户将与之交互的模块。
 
-However, your blockchain usually needs to keep track of many other pieces of data to function properly.
+然而，你的区块链通常需要跟踪许多其他数据才能正常运行。
 
-For this, we will create a new pallet called the System Pallet.
+为此，我们将创建一个名为 System Pallet 的新模块。
 
-## What is the System Pallet?
+## 什么是 System Pallet？
 
-The System Pallet is a "meta"-pallet which stores all the metadata needed for your blockchain to function. For example, the current blocknumber or the nonce of users on your blockchain.
+System Pallet 是一个“元”模块（其他模块的支撑模块），它存储了区块链运行所需的所有元数据。例如，当前区块号或区块链上用户的随机数（nonce）。
 
-This pallet does not need to expose any functions to end users, but can still play an important role in our overall state transition function.
+这个模块不需要向最终用户公开任何功能，但它仍然可以在我们的整体状态转换函数中发挥重要作用。
 
-We will see the importance of the System Pallet evolve as you walk through the steps of building it.
+随着你逐步构建 System Pallet ，你会看到它的重要性逐渐显现。
 
-## Create the System Pallet
+## 创建 System Pallet 
 
-1. Create a new file `src/system.rs` in your project.
-2. Copy the starting template provided, then complete the steps outlined by the template code.
-3. Import the `system` module into your `main.rs` file.
+1. 在你的项目中创建一个新文件 `src/system.rs`。
+2. 复制提供的起始模板，然后完成模板代码中概述的步骤。
+3. 将 `system` 模块导入到你的 `main.rs` 文件中。
 
-You will notice that the instructions here are quite brief. You have already done all of these steps before, so you should already be familiar with everything you need to complete this step.
+你会注意到这里的说明相当简洁。你之前已经完成了所有这些步骤，所以你应该已经熟悉完成这一步所需的一切。
 
-Confirm everything is compiling. You should expect some "never used/constructed" warnings. That is okay.
+确认一切都在编译。你可能会看到一些“从未使用/构造”的警告。这没关系。

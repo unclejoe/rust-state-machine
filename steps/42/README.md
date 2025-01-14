@@ -1,25 +1,25 @@
-# Create Your Block Type
+# 创建你的区块类型
 
-The support module provided for us a bunch of generic types which can be customized for our simple state machine. To actually start using them, we need to define concrete versions of these types using our other concrete types.
+支持模块为我们提供了一系列通用类型，这些类型可以根据我们的简单状态机进行自定义。为了实际开始使用它们，我们需要使用其他具体类型来定义这些类型的具体版本。
 
-## Runtime Call
+## 运行时调用
 
-You will see the template provides an empty `enum RuntimeCall` which we will expand later. This is an object which is supposed to represent all the various calls exposed by your blockchain to users and the outside world. We need to mock this enum at this step so that it can be used to build a concrete `Extrinsic` type.
+你会看到模板提供了一个空的 `enum RuntimeCall`，我们将在后面扩展它。这个对象代表了你的区块链向用户和外部世界公开的所有各种调用。在这一步，我们需要模拟这个枚举，以便能够使用它来构建一个具体的 `Extrinsic` 类型。
 
-For now, there is just the `transfer` function exposed by the Balances Pallet, but we will add more before this tutorial is complete, and figure out ways to automate the creation of our `RuntimeCall`.
+目前，只有 `Balances Pallet` 公开的 `transfer` 函数，但在本教程结束之前，我们将添加更多函数，并找到自动化创建 `RuntimeCall` 的方法。
 
-You can access this type within `mod types` with `crate::RuntimeCall`.
+你可以在 `mod types` 中使用 `crate::RuntimeCall` 访问这个类型。
 
-## Building the Block Type
+## 构建区块类型
 
-It's time to define the concrete `Block` type that we will use to enhance our simple state machine.
+是时候定义我们将用于增强简单状态机的具体 `Block` 类型了。
 
-1. Using the `RuntimeCall` enum and the `AccountId` type, you can define a concrete `Extrinsic` type.
-2. Using the `BlockNumber` type, you can define a concrete `Header` type.
-3. Using the concrete `Header` and `Extrinsic` types, you can define a concrete `Block` type.
+1. 使用 `RuntimeCall` 枚举和 `AccountId` 类型，你可以定义一个具体的 `Extrinsic` 类型。
+2. 使用 `BlockNumber` 类型，你可以定义一个具体的 `Header` 类型。
+3. 使用具体的 `Header` 和 `Extrinsic` 类型，你可以定义一个具体的 `Block` 类型。
 
-As you can see, the `Block` is composed of layers of generic types, allowing the whole structure to be flexible and customizable to our needs.
+如你所见，`Block` 是由多层通用类型组成的，这使得整个结构灵活且可根据我们的需求进行自定义。
 
-Pay attention to the generic type definitions to ensure that you use all the correct generic parameters in all the right places.
+请注意通用类型的定义，确保在所有正确的地方使用所有正确的通用参数。
 
-Your code should still compile with some "never constructed/used" warnings.
+你的代码应该仍然可以编译，但可能会有一些“从未构建/使用”的警告。

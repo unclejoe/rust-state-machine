@@ -1,3 +1,3 @@
-# Introduce the System Pallet
+# 介绍 System Pallet
 
-You can find the solution to the previous step here.
+你可以在这里找到上一步的解决方案。

@@ -1,65 +1,65 @@
-# Add Our Support Module
+# 添加支持模块
 
-In this step, we will introduce a `support` module to help bring in various types and traits that we will use to enhance our simple state machine.
+在这一步中，我们将引入一个`support`模块，以帮助引入各种类型和特征，这些类型和特征将用于增强我们的简单状态机。
 
-This `support` module parallels something similar to the [`frame_support` crate](https://docs.rs/frame-support/latest/frame_support/) that you would find in the Polkadot SDK.
+这个`support`模块类似于在Polkadot SDK中可以找到的`frame_support` crate。
 
-The reason the `frame_support` crate exists, is to allow multiple other crates use common types and trait, while avoiding [cyclic dependencies](https://users.rust-lang.org/t/how-to-resolve-cyclic-dependency/51387), which is not allowed in Rust.
+`frame_support` crate存在的原因是为了允许多个其他crate使用泛型类型和特征，同时避免[循环依赖](https://users.rust-lang.org/t/how-to-resolve-cyclic-dependency/51387)，这在Rust中是不允许的。
 
-Our simple state machine will not experience this problem explicitly, since we are building everything in a single crate, but the structure of the project will still follow these best practices.
+我们的简单状态机不会明确地遇到这个问题，因为我们在一个crate中构建所有内容，但项目的结构仍将遵循这些最佳实践。
 
-## Constructing a Block
+## 构建区块
 
-The first set of primitives provided by the `support` module are a set of structs that we need to construct a simple `Block`.
+`support`模块提供的第一组原语是一组结构体，我们需要这些结构体来构建一个简单的`Block`。
 
-### The Block
+### 区块
 
-A block is basically broken up into two parts: the header and a vector of extrinsics.
+一个区块基本上分为两个部分：头部和一个外部数据向量。
 
-You can see that we keep the `Block` completely generic over the `Header` and `Extrinsic` type. The exact contents and definitions of these sub-types may change, but the generic `Block` struct can always be used.
+你可以看到，我们在`Block`结构体中保持了对`Header`和`Extrinsic`类型的完全通用性。这些子类型的具体内容和定义可能会改变，但通用的`Block`结构体可以始终使用。
 
-#### The Header
+#### 头部
 
-The block header contains metadata about the block which is used to verify that the block is valid. In our simple state machine, we only store the blocknumber in the header, but real blockchains like Polkadot have:
+区块头包含用于验证区块有效性的元数据。在我们的简单状态机中，我们只在头部存储区块号，但像Polkadot这样的真实区块链有：
 
-- Parent Hash
-- Block Number
-- State Root
-- Extrinsics Root
-- Consensus Digests / Logs
+- 父哈希
+- 区块号
+- 状态根
+- 外部数据根
+- 共识摘要/日志
 
-#### The Extrinsic
+#### 外部数据
 
-In our simple state machine, extrinsics are synonymous with user transactions.
+在我们的简单状态机中，外部数据等同于用户交易。
 
-Thus our extrinsic type is composed of a `Call` (the function we will execute) and a `Caller` (the account that wants to execute that function).
+因此，我们的外部数据类型由一个`Call`（我们将执行的函数）和一个`Caller`（想要执行该函数的账户）组成。
 
-The Polkadot SDK supports other kinds of [extrinsics beyond a user transactions](https://docs.rs/sp-runtime/36.0.0/sp_runtime/generic/struct.UncheckedExtrinsic.html), which is why it is called an `Extrinsic`, but that is beyond the scope of this tutorial.
+Polkadot SDK支持其他类型的[外部数据，而不仅仅是用户交易](https://docs.rs/sp-runtime/36.0.0/sp_runtime/generic/struct.UncheckedExtrinsic.html)，这就是为什么它被称为`Extrinsic`，但这超出了本教程的范围。
 
-## Dispatching Calls
+## 调度调用
 
-The next key change we are going to make to our simple state machine is to handle function dispatching. Basically, you can imagine that there could be multiple different pallets in your system, each with different calls they want to expose.
+我们将对简单状态机进行的下一个关键更改是处理函数调度。基本上，你可以想象在你的系统中可能有多个不同的 Pallet ，每个 Pallet 都有不同的调用，它们希望公开给用户调用。
 
-Your runtime, acting as a single entrypoint for your whole state transition function needs to be able to route incoming calls to the appropriate functions. For this, we need the `Dispatchable` trait.
+运行时作为整个状态转换函数的单一入口点，需要能够将传入的调用路由到适当的函数执行。为此，我们需要`Dispatchable`特征。
 
-You will see how this is used near the end of this tutorial.
+你将在本教程的结尾看到如何使用它。
 
-### Dispatch Result
+### 调度结果
 
-One last thing we added to the support module was a simple definition of the `Result` type that we want all dispatchable calls to return. This is exactly the type we already used for the `fn transfer` function, and allows us to return `Ok(())` if everything went well, or `Err("some error message")` if something went wrong.
+我们在支持模块中添加的最后一件事是一个简单的`Result`类型定义，我们希望所有可调度调用都返回这个类型。这正是我们已经用于`fn transfer`函数的类型，允许我们在一切顺利时返回`Ok(())`，或者在出现问题时返回`Err("some error message")`。
 
-## Create the Support Module
+## 创建支持模块
 
-Now that you understand what is in the support module, add it to your project.
+现在你理解了支持模块中的内容，将其添加到你的项目中。
 
-1. Create the `support.rs` file:
+1. 创建`support.rs`文件：
 
 	```bash
 	touch src/support.rs
 	```
 
-2. Copy and paste the content provided into your file.
-3. Import the support module at the top of your `main.rs` file.
-4. Finally, replace your `Result<(), &'static str>` with `crate::support::DispatchResult` in the `fn transfer` function in your Balances Pallet.
+2. 将提供的内容复制并粘贴到你的文件中。
+3. 在`main.rs`文件的顶部导入支持模块。
+4. 最后，在你的Balances Pallet 的`fn transfer`函数中，将`Result<(), &'static str>`替换为`crate::support::DispatchResult`。
 
-Introducing this new module will cause your compiler to emit lots of "never constructed" warnings. Everything should still compile, so that is okay. We will use these new types soon.
+引入这个新模块会导致编译器发出许多“从未构建”的警告。一切应该仍然可以编译，所以这没关系。我们很快就会使用这些新类型。

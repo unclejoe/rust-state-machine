@@ -1,3 +1,3 @@
-# Make Balances Configurable
+# 使 Balances 可配置
 
-You can find the solution to the previous step here.
+你可以在这里找到上一步的解决方案。

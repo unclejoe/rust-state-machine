@@ -1,3 +1,3 @@
-# Create Your Block Type
+# 创建你的区块类型
 
-You can find the solution for the previous step here.
+你可以在这里找到前一步的解决方案。

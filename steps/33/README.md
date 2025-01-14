@@ -1,162 +1,148 @@
-# Make System Configurable
+# 使系统可配置
 
-We have one more step to take to make our Runtime as generic and configurable as possible.
+为了使我们的运行时尽可能通用和可配置，我们还需要采取一个步骤。
 
-To do it, we will need to take advantage of traits.
+为了实现这一点，我们将需要利用 trait。
 
-## Custom Traits
+## 自定义 Trait
 
-We have already used traits provided to us in order to make our types generic.
+我们已经使用了 Rust 提供的 trait 来使我们的类型通用化。
 
-Let's take a quick look at how you can define a custom trait:
+让我们快速了解一下如何定义自定义 trait：
 
 ```rust
 pub trait Config {}
 ```
 
-Traits can contain within it two things:
+Traits 可以包含两种内容：
 
-1. functions which must be implemented by the type
-2. associated types
+1. 必须由类型实现的函数。
+2. 关联类型。
 
-### Custom Functions
+### 自定义函数
 
-The more obvious use of traits is to define custom functions
+Traits 更明显的用途是定义自定义函数。
 
-Let's say we want to expose a function which returns the name of something.
+假设我们想要公开一个返回某个东西名称的函数。
 
-You could a trait `GetName`:
+你可以创建一个名为 `GetName` 的 trait：
 
 ```rust
 pub trait GetName {
-	fn name() -> String;
+    fn name() -> String;
 }
 ```
 
-Then you could implement this trait for any object.
+然后，你可以为任何对象实现这个 trait。
 
 ```rust
-struct Shawn;
-impl GetName for Shawn {
-	fn name() -> String {
-		return "shawn".to_string();
-	}
+struct Dan;
+impl GetName for Dan {
+    fn name() -> String {
+        return "Dan".to_string();
+    }
 }
 ```
 
-And then call that function on the object which implements it.
+然后，你可以在实现了该 trait 的对象上调用这个函数。
 
 ```rust
 fn main() {
-	println!("{}", Shawn::name());
+    println!("{}", Dan::name());
 }
 ```
 
-We won't actually use this feature of traits in our simple blockchain, but there are plenty of use cases for this when developing more complex blockchain systems.
+在我们简单的区块链中，我们实际上不会使用 trait 的这个特性，但在开发更复杂的区块链系统时，这有很多用例。
 
-### Associated Types
+### 关联类型
 
-The other thing you can do with traits is define Associated Types.
+你还可以使用 trait 定义关联类型。
 
-This is covered in [chapter 19 of the Rust Book](https://doc.rust-lang.org/book/ch19-03-advanced-traits.html) under "Advance Traits".
+这在 [Rust Book的第 19 章](https://doc.rust-lang.org/book/ch19-03-advanced-traits.html) "高级 Traits" 中有介绍。
 
-Let's learn this concept by first looking at the problem we are trying to solve.
+让我们通过首先查看我们试图解决的问题来学习这个概念。
 
-So far our simple blockchain code looks perfectly fine with generic types. However, let's imagine that our blockchain becomes more and more complex, requiring more and more generic types.
+到目前为止，我们的简单区块链代码看起来非常好，使用了泛型类型。然而，让我们想象一下，随着我们的区块链变得越来越复杂，需要越来越多的泛型类型。
 
-For example:
+例如：
 
 ```rust
-pub struct Pallet<AccountId, BlockNumber, BlockLength, BlockWeight, Hash, Nonce, Runtime, Version, ...> {
-	// a bunch of stuff
+pub struct Pallet<AccountId, BlockNumber, BlockLength, BlockWeight, Hash, Nonce, Runtime, Version,...> {
+    // 一堆东西
 }
 ```
 
-Imagine every time you wanted to instantiate this struct, you would need to fill out each and every one of those types. Well systems do get this complex, and more, and the ability to abstract these types one level further can really simplify your code and make it much more readable.
+想象一下，每次你想要实例化这个结构体时，你都需要依次具体指明所有这些泛型的实际类型。系统因此会变得非常复杂，而能够将这些类型抽象到更高的层次可以真正简化你的代码，使其更具可读性和可配置性。
 
-For this we will use a trait with a bunch of associated types:
+为此，我们将使用一个带有多个关联类型的 trait：
 
 ```rust
 pub trait Config {
-	type AccountId: Ord;
-	type BlockNumber: Zero + One + AddAssign + Copy;
-	type Nonce: Zero + One + Copy;
-	// and more if needed
+    type AccountId: Ord;
+    type BlockNumber: Zero + One + AddAssign + Copy;
+    type Nonce: Zero + One + Copy;
+    // 如果需要，还可以有更多
 }
 ```
 
-Then we can define our generic type using a single generic parameter!
+然后，我们可以使用单个泛型参数来定义我们的泛型类型！
 
 ```rust
 pub struct Pallet<T: Config> {
-	block_number: T::BlockNumber,
-	nonce: BTreeMap<T::AccountId, T::Nonce>,
+    block_number: T::BlockNumber,
+    nonce: BTreeMap<T::AccountId, T::Nonce>,
 }
 ```
 
-and implement functions using:
+并使用以下语法实现 Pallet：
 
 ```rust
 impl<T: Config> Pallet<T> {
-	// functions using types from T here
+    // 在这里使用来自 T 的类型的函数
 }
 ```
 
-Let's try to understand this syntax real quick.
+让我们快速理解一下这个语法。
 
-1. There is a generic type `T`. `T` has no meaningful name because it represents a bunch of stuff, and this is the convention most commonly used in Rust.
-2. `T` is required to implement the trait `Config`, which we previously defined.
-3. Because `T` implements `Config`, and `Config` has the associated types `AccountId`, `BlockNumber`, and `Nonce`, we can access those types like so:
-	- `T::AccountId`
-	- `T::BlockNumber`
-	- `T::Nonce`
+1. 有一个泛型类型 `T`。`T` 只是没有具体意义的名称，因为它代表一堆东西，这是 Rust 中最常用的约定。
+2. `T` 被要求实现 `Config` trait，这是我们之前定义的。
+3. 因为 `T` 实现了 `Config`，并且 `Config` 有关联类型 `AccountId`、`BlockNumber` 和 `Nonce`，我们可以像这样访问这些类型：
+    - `T::AccountId`
+    - `T::BlockNumber`
+    - `T::Nonce`
 
-There is no meaningful difference between what we had before with 3 generic parameters, and a single generic parameter represented by a `Config` trait, but it certainly makes everything more scalable, easy to read, and easy to configure.
+在这个上下文中，我们称这个 trait 为 `Config`，因为它用于配置我们的 `Pallet` 的所有类型。
 
-In this context, we call the trait `Config` because it is used to configure all the types for our Pallet.
+### 实现 Config Trait
 
-### Implementing the Config Trait
+让我们通过展示如何实现和使用 `Config` trait 来结束这一部分。
 
-Let's round this out with showing how you can actually implement and use the `Config` trait.
-
-Just like before, we need some object which will implement this trait. In our case, we can use the `Runtime` struct itself.
+就像之前一样，我们需要一些对象来实现这个 trait。在我们的例子中，我们可以使用 `Runtime` 结构体本身。
 
 ```rust
 impl system::Config for Runtime {
-	type AccountId = String;
-	type BlockNumber = u32;
-	type Nonce = u32;
+    type AccountId = String;
+    type BlockNumber = u32;
+    type Nonce = u32;
 }
 ```
 
-Then, when defining the `system::Pallet` within the `Runtime`, we can use the following syntax:
+然后，当在 `Runtime` 中定义 `system::Pallet` 时，我们可以使用以下语法：
 
 ```rust
 pub struct Runtime {
-	system: system::Pallet<Self>,
+    system: system::Pallet<Self>,
 }
 ```
 
-Here we are basically saying that `Pallet` will use `Runtime` as its generic type, but this is defined within the `Runtime`, so we refer to it as `Self`.
+这里我们基本上是说 `Pallet` 将使用 `Runtime` 作为其泛型的具体类型，但这是在 `Runtime` 内部定义的，所以我们将其称为 `Self`。
 
-## Make Your System Configurable
+## 使你的系统可配置
 
-Phew. That was a lot.
+这是一个关键的步骤，对于新的 Rust 开发者来说，这是一个常见的地方，人们可能会非常困惑。
 
-Let's practice all you have learned to create `Config` trait for your System Pallet, and then configure the pallet for the `Runtime` in `main.rs`.
+你将有机会在 `Balances Pallet` 中再次执行这个整个过程，所以如果你这次无法让你的代码工作，不要偷懒多看解决方案。
 
-1. Define the `Config` trait which will have your 3 associated types `AccountId`, `BlockNumber`, and `Nonce`.
-2. Make sure these types have their trait constraints defined in `Config`.
-3. Update your `struct Pallet` to use `T: Config` and reference your types using the `T::` syntax.
-4. Update all of your functions to use the `T::` syntax.
-5. Update your test, creating a struct `TestConfig`, and implementing `Config` for it, and using it to instantiate your `Pallet` struct.
-6. Go to your `main.rs` file, and implement `system::Config` for the `Runtime` struct.
-7. Update your `Runtime` definition to instantiate `system::Pallet` with `Self`.
+真的要花时间理解这一步，发生了什么，以及所有这些语法对 Rust 的意义。
 
-Again, this is a big step for new Rust developers, and a common place that people can get very confused.
-
-You will have the opportunity to do this whole process again for the Balances Pallet, so don't be afraid to peek at the solution this time around if you cannot get your code working.
-
-Really take time to understand this step, what is happening, and what all of this syntax means to Rust.
-
-Remember that Rust is a language which is completely type safe, so end of the day, all of these generic types and configurations need to make sense to the Rust compiler.
+请记住，Rust 是一种完全类型安全的语言，所以最终，所有这些泛型类型和配置都需要指明具体类型以对 Rust 编译器有意义。

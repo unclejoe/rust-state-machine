@@ -1,17 +1,14 @@
-# Make System Pallet Generic
+# 使 System Pallet 通用化
 
-Now that you have some practice with the Balances Pallet, let's do the same task for the System Pallet.
+现在你已经对 `Balances`  Pallet 进行了一些实践，让我们对 `System`  Pallet 执行相同的任务。
 
-1. In this case we need to make System generic over `AccountId`, `BlockNumber`, and `Nonce`.
+1. 在这种情况下，我们需要使 `System` 通用化，使其能够处理 `AccountId`、`BlockNumber` 和 `Nonce` 类型。
+2. 你还需要确定这些类型所需的 trait 约束，以确保它们与你之前编写的逻辑兼容。编译器在这里是你的朋友，可以帮助你解决所有问题。
+3. 更新你的测试。
+4. 最后，将你的类型定义移动到 `main.rs` 文件中，并更新你的 `Runtime`。
 
-2. You will also need to figure out the trait constraints needed for these types to be compatible with the logic you have previously written. The compiler is your friend here to help you navigate everything.
+确保在完成此步骤后，所有内容都能编译通过，并且所有测试都能通过。
 
-3. Update your tests.
+如果你需要帮助，我建议你查看你的 `Balances`  Pallet 。所有的模式都和以前一样，所以你最好自己开始理解这些点之间的联系，而不是依赖解决方案。
 
-4. Finally move your type definitions to your `main.rs` file and update your `Runtime`.
-
-Make sure everything compiles and all tests pass after this step.
-
-If you need help, I recommend to look at your Balances Pallet rather than the solution for this step. All of the patterns are the same as before, so it is better that you start to connect the dots yourself rather than relying on the solution.
-
-If you struggled here, it is a good opportunity to take a pause and re-review generic types from other examples across the Rust ecosystem.
+如果你在这里遇到了困难，这是一个很好的机会来暂停并重新审视 Rust 生态系统中其他示例中的泛型类型。

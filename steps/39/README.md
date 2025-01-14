@@ -1,7 +1,7 @@
-# Executing Blocks and Dispatching Calls
+# 执行区块和分派函数调用
 
-In this next section, you will construct the core pipeline used to interact with your state machine.
+在接下来的部分，您将构建与状态机交互的核心管道。
 
-We will create the block structure which contains the transactions for your state transition function, and then the function dispatch pipeline to route those transactions to the appropriate function calls.
+我们将创建包含状态转换函数交易的区块结构，然后构建将这些交易路由到相应函数调用的函数分派管道。
 
-The goal of this section is to make your existing state machine resemble a blockchain that can be extended and upgraded.
+本部分的目标是使您现有的状态机类似于一个可以扩展和升级的区块链。

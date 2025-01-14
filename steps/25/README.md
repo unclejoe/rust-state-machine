@@ -1,9 +1,7 @@
-# Generic and Configurable Types
+# 泛型和可配置类型
 
-In this section, we will be harnessing the full power of Rust to create a generic and configurable Runtime.
+在本节中，我们将充分利用 Rust 的强大功能来创建一个通用且可配置的运行时（Runtime）。
 
-There will be no real logical changes happening in the next steps.
+在接下来的步骤中，不会发生真正的逻辑更改。相反，我们将逐步抽象出我们的模块（Pallets）中定义的具体类型，用代码来处理纯粹的泛型类型。
 
-Instead, we will be gradually abstracting away the concrete types defined in our Pallets, and instead structure our code to handle purely generic types.
-
-At the end of the section, you will have a project whose structure exactly mirrors what is found in the Polkadot SDK and understand how all of it works.
+在本节结束时，你将拥有一个项目，其结构与 Polkadot SDK 中的结构完全相同，并理解所有这些是如何工作的。

@@ -1,54 +1,54 @@
-# Making Your System Functional
+# 使你的系统具备实用功能
 
-We have again established the basis of a new Pallet.
+我们已经再次建立了一个新的 Pallet。
 
-Let's add functions which make it useful.
+让我们添加一些功能，使其变得有用。
 
-## Block Number
+## 区块编号
 
-Your blockchain's blocknumber is stored in the System Pallet, and the System Pallet needs to expose functions which allow us to access and modify the block number.
+你的区块链的区块编号存储在 System Pallet 中，因此需要公开一些函数，允许我们访问和修改区块编号。
 
-For this we need two simple functions:
+为此，我们需要两个简单的函数：
 
-- `fn block_number` - a function that returns the currently stored blocknumber.
-- `fn inc_block_number` - a function that increments the current block number by one.
+- `fn block_number` - 一个返回当前存储的区块编号的函数。
+- `fn inc_block_number` - 一个将当前区块编号加一的函数。
 
-This should be everything that a basic blockchain needs to function.
+这应该是一个基本区块链所需的一切功能。
 
-## Nonce
+## 随机数
 
-The `nonce` represents "a number used once".
+`nonce` 代表“一次使用的数字”。
 
-In this context, each user on your blockchain has a `nonce` which gives a unique value to each transaction the user submits to the blockchain.
+在这种情况下，你的区块链上的每个用户都有一个 `nonce`，它为用户提交到区块链的每个交易提供一个唯一的序号值。
 
-Remember that blockchains are decentralized and distributed systems, and transactions do not inherently have a deterministic order. For a user, we can assign an order to different transactions by using this nonce to keep track of how many transactions the user has executed on the blockchain.
+请记住，区块链是去中心化和分布式的系统，交易本身并没有一个确定的顺序。对于用户来说，我们可以通过使用这个 `nonce` 来跟踪用户在区块链上执行了多少笔交易，从而为不同的交易分配一个顺序。
 
-For this, we again use a `BTreeMap` to give each user their own `nonce` counter.
+为此，我们再次使用一个 `BTreeMap` 来为每个用户提供他们自己的 `nonce` 计数器。
 
-Our simple blockchain won't use this value, but for the sake of example, we will keep track of it by creating an `inc_nonce` function. If you were creating a more complex blockchain, the user `nonce` would become an important part of your system.
+我们的简单区块链不会使用这个值，但为了示例的目的，我们将通过创建一个 `inc_nonce` 函数来跟踪它。如果你正在创建一个更复杂的区块链，用户的 `nonce` 将成为你系统的一个重要组成部分。
 
-## Safe Math?
+## 安全数学？
 
-We just explained the importance of using safe math when writing the Balances Pallet.
+我们刚刚解释了在编写 Balances Pallet 时使用安全数学的重要性。
 
-In that context, it is easy to see how a user could provide malicious inputs, and cause simple underflows or overflows if our system did not check the math.
+在那种情况下，很容易看出用户如何提供恶意输入，并在我们的系统不检查数学边界的情况下导致的下溢或上溢。
 
-However, you will see in the templates provided, that these new functions in the System Pallet do not return a result, and thus do not provide error handling.
+然而，你会在提供的模板中注意到， System Pallet 中的这些新函数没有返回结果，因此没有提供错误处理。
 
-Is this okay?
+这没问题吗？
 
-As you will notice, the `blocknumber` and `nonce` storage items only provide APIs to increment by one. In our System, both of these numbers are represented by `u32`, which means that over 4.2 billion calls to those functions need to occur before an overflow would happen.
+正如你所注意到的，`blocknumber` 和 `nonce` 存储项只提供了加一的 API。在我们的系统中，这两个数字都用 `u32` 表示，这意味着在发生溢出之前，需要调用这些函数超过 42 亿次。
 
-Assuming a user does one transaction every block, and a new block is generated every 6 seconds, it would take over 800 years for an overflow to occur. So in this situation, we are preferring an API which requires no error handling rather than one which does.
+假设一个用户每区块时间内执行一笔交易，并且每 6 秒生成一个新区块，那么发生溢出需要超过 800 年的时间。因此，在这种情况下，我们更倾向于选择一个不需要错误处理的 API。
 
-End of the day, this is a design decision and a preference which is left to the developer. This tutorial chooses this API because this is exactly the API exposed by Substrate and the Polkadot SDK. There is nothing wrong with making these functions handle errors, so feel free to do this if you choose.
+归根结底，这是一个设计决策取舍和偏好，留给开发者自己决定。本教程选择这个 API，是因为这正是 Substrate 和 Polkadot SDK 所公开的 API。使用这些函数处理错误也很符合规范，所以如果你愿意，也可以这样做。
 
-## Build Your System Pallet
+## 构建你的 System Pallet 
 
-Follow the instructions in the template to complete:
+按照模板中的说明完成：
 
 1. `fn block_number`
 2. `fn inc_block_number`
 3. `fn inc_nonce`
 
-Then write tests which verify that these functions work as expected, and that your state is correctly updated. There should be no compiler warnings after this step!
+然后编写测试，验证这些函数按预期工作，并且你的状态得到正确更新。完成这一步后，应该没有编译器警告！

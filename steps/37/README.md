@@ -1,81 +1,81 @@
-# Tight Coupling
+# 紧耦合
 
-You might have noticed some redundancy when making our pallets generic and configurable. Both pallets defined an `AccountId` type, and technically we could define their concrete type differently!
+你可能已经注意到，在使我们的 Pallet 通用和可配置时，存在一些冗余。两个 Pallet 都定义了一个 `AccountId` 类型，而从技术上讲，我们可以以不同的方式定义它们的具体类型！
 
-We wouldn't want this on a real production blockchain. Instead, we would want to define common types in a single spot, and use that everywhere.
+在实际的生产区块链中，我们不希望这样。相反，我们希望在一个地方定义通用类型，并在任何地方使用它们。
 
-## Trait Inheritance
+## 特征继承
 
-Rust has the ability for traits to inherit from one another. That is, that for you to implement some trait, you also need to implement all traits that it inherits.
+Rust 具有特征继承的能力。也就是说，为了实现某个特征，你还需要实现它继承的所有特征。
 
-Let's look at some examples.
+让我们看一些例子。
 
-### Trait Functions
+### 特征函数
 
-We can extend our previous example to show what trait inheritance does with functions
+我们可以扩展之前的例子，展示特征继承如何处理函数。
 
 ```rust
 pub trait GetName {
-	// returns a string representing the object's name
-	fn name() -> String;
+    // 返回一个字符串，表示对象的名称
+    fn name() -> String;
 }
 
 pub trait SayName: GetName {
-	// will print the name from `name()` to console
-	fn say_name() {
-		println!("{}", Self::name());
-	}
+    // 将 `name()` 函数返回的名称打印到控制台
+    fn say_name() {
+        println!("{}", Self::name());
+    }
 }
 ```
 
-Note how in the definition of `trait SayName`, we reference `GetName` after a colon. This `SayName`, your object must also implement `GetName`. Note that we could even program a "default" implementation of `get_name` by using the `Self::name()` function.
+注意在 `trait SayName` 的定义中，我们在冒号后面引用了 `GetName`。这意味着要实现 `SayName` 特征，你的对象必须同时实现 `GetName` 特征。请注意，我们甚至可以通过使用 `Self::name()` 函数来为 `get_name` 编写一个“默认”实现。
 
-So when we implement these traits, it looks like:
+因此，当我们实现这些特征时，它看起来像这样：
 
 ```rust
-struct Shawn;
-impl GetName for Shawn {
-	fn name() -> String {
-		return "shawn".to_string();
-	}
+struct Dan;
+impl GetName for Dan {
+    fn name() -> String {
+        return "shawn".to_string();
+    }
 }
 
-impl SayName for Shawn {}
+impl SayName for Dan {}
 ```
 
-We could choose to implement our own version of the `SayName` function, for example like:
+我们可以选择实现我们自己版本的 `SayName` 函数，例如：
 
 ```rust
-impl SayName for Shawn {
-	fn say_name() {
-		println!("My name is {}!", Self::name());
-	}
+impl SayName for Dan {
+    fn say_name() {
+        println!("My name is {}!", Self::name());
+    }
 }
 ```
 
-But we don't have to do this. What we do have to do is make sure that `GetName` is implemented for `Shawn` or you wont be able to use the `SayName` trait. Again, we won't be using this in our tutorial, but it is nice to see examples of how this can be used.
+但我们不必这样做。我们必须做的是确保 `GetName` 为 `Dan` 实现，否则你将无法使用 `SayName` 特征。同样，我们不会在本教程中使用这个，但很高兴看到这个如何被使用的例子。
 
-### Associated Types
+### 关联类型
 
-Rather than redefining `type AccountId` in each Pallet that needs it, what if we just defined it in `system::Config`, and inherit that type in other Pallet configs?
+与其在每个需要它的 Pallet 中重新定义 `type AccountId`，不如我们在 `system::Config` 中定义它，并在其他 Pallet 配置中继承该类型？
 
-Let's see what that would look like:
+让我们看看这会是什么样子：
 
 ```rust
 pub trait Config: crate::system::Config {
-	type Balance: Zero + CheckedSub + CheckedAdd + Copy;
+    type Balance: Zero + CheckedSub + CheckedAdd + Copy;
 }
 ```
 
-Here you can see our `balances::Config` trait is inheriting from our `crate::system::Config` trait. This means that all types defined by `system::Config`, including the `AccountId`, is accessible through the `balances::Config` trait. Because of this, we do not need to redefine the `AccountId` type in `balances::Config`.
+在这里，你可以看到我们的 `balances::Config` 特征继承自 `crate::system::Config` 特征。这意味着通过 `balances::Config` 特征，可以访问 `system::Config` 定义的所有类型，包括 `AccountId`。因此，我们不需要在 `balances::Config` 中重新定义 `AccountId` 类型。
 
-In the Polkadot SDK ecosystem, we call this "tight coupling" because a runtime which contains the Balances Pallet must also contain the System Pallet. In a sense these two pallets are tightly coupled to one another. In fact, with Substrate, all pallets are tightly coupled to the System Pallet, because the System Pallet provides all the meta-types for your blockchain system.
+在 Polkadot SDK 生态系统中，我们称这为“紧耦合”，因为包含 Balances  Pallet 的运行时必须同时包含 System  Pallet 。从某种意义上说，这两个 Pallet 是紧密耦合的。实际上，在 Substrate 中，所有 Pallet 都与 System  Pallet 紧密耦合，因为 System  Pallet 提供了区块链系统的所有元类型。
 
-## Tightly Couple Balances To System
+## 将 Balances 紧密耦合到 System
 
-Let's remove the redundant `AccountId` definition from the Balances Pallet `Config`.
+让我们从 Balances  Pallet 中删除冗余的 `AccountId` 定义。
 
-1. Inherit the `crate::system::Config` trait in the `balances::Config` trait.
-2. Remove the `AccountId` type from your `balances::Config` definition.
-3. Implement `crate::system::Config` for `TestConfig`.
-4. In `main.rs`, simply remove `type AccountId` from `balances::Config`.
+1. 在 `balances::Config` 特征中继承 `crate::system::Config` 特征。
+2. 从 `balances::Config` 定义中删除 `AccountId` 类型。
+3. 为 `TestConfig` 实现 `crate::system::Config` 特征。
+4. 在 `main.rs` 中，只需从 `balances::Config` 中删除 `type AccountId`。

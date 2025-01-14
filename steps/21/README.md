@@ -1,65 +1,65 @@
-# Using Our Runtime
+# 使用我们的运行时(Runtime)
 
-Until now, we have just been scaffolding parts of our blockchain. Tests have ensured that the code we have written so far make sense, but we haven't actually USED any of the logic we have written for our `main` program.
+到目前为止，我们只是构建了区块链的各个部分。测试确保了我们迄今为止编写的代码是正确且有意义的，但我们还没有实际使用我们为`main`程序编写的任何逻辑。
 
-Let's change that by using our Runtime and actually executing logic on our blockchain.
+下面通过使用运行时(Runtime)并在我们的区块链上实际执行业务逻辑。
 
-## Simulating a Block
+## 模拟一个区块
 
-The input to any blockchain state transition function is a block of transactions.
+任何区块链状态转换函数的输入都是一个交易区块。
 
-Later in the tutorial we will actually spend more time to build proper blocks and execute them, but for now, we can "simulate" all the basics of what a block would do by individually calling the functions our Pallets expose.
+在本教程的后面，我们将花更多时间构建适当的区块并执行它们，但现在，我们可以通过单独调用我们的 Pallets 公开的函数来“模拟”区块的所有基本操作。
 
-### Genesis State
+### 创世状态
 
-The state of your blockchain will propagate from block to block. This means if Alice received 100 tokens on block 4, that she can transfer at least 100 tokens on block 5, and so on.
+您的区块链状态将从一个区块转移到另一个区块。这意味着，如果Alice在第4个区块收到100个代币，那么她可以在第5个区块至少转移100个代币，依此类推。
 
-But how do users get any balance to begin with?
+但是用户如何从任意起始余额开始呢？
 
-The answer to this question can be different for different blockchains, but in general most modern blockchains start with a Genesis State. This is the starting state of your blockchain on "block 0".
+这个问题的答案对于不同的区块链可能不同，但一般来说，大多数现代区块链都从创世状态开始。这是您的区块链在“第0个区块”的起始状态。
 
-This means anything set in the genesis state can be used on block 1, and can bootstrap your blockchain to being functional.
+这意味着在创世状态中设置的任何内容都可以在第1个区块中使用，并且可以引导您的区块链正常运行。
 
-In our situation, you can simply call low level functions like `set_balance` before we simulate our first block to establish our genesis state.
+在我们的情况下，您可以在模拟第一个区块之前简单地调用函数，如`set_balance`，以建立我们的创世状态。
 
-### Steps of a Basic Block
+### 执行区块的基本步骤
 
-Let's quickly break down the steps of executing a basic block:
+让我们快速分解执行基本区块的步骤：
 
-1. First we increment the blocknumber, since each new block will have a new blocknumber.
-2. Then we go through an execute each transaction in that block:
-	1. Each transaction for our blockchain will come from a user, thus we will increment the users nonce as we process their transaction.
-	2. Then we will attempt to execute the function they want to call, for example `transfer`.
-	3. Repeat this process for every transaction.
+1. 首先，我们增加区块号，因为每个新区块都会有一个新的区块号。
+2. 然后，我们遍历并执行该区块中的每个交易：
+    1. 区块链的每个交易都将来自用户，因此在处理交易时，我们将增加用户的nonce。
+    2. 我们将尝试执行他们想要调用的函数，例如`transfer`。
+    3. 对每个交易重复此过程。
 
-### Handling Errors
+### 处理错误
 
-The `main()` function in Rust cannot propagate or handle errors itself. Either everything inside of it is handled, or you will have to trigger a `panic`.
+Rust中的`main()`函数无法传播或处理错误。要么处理它内部的所有事情，要么你将不得不触发一个`panic`。
 
-As you have already learned, triggering a `panic` is generally not good, but may be the only thing you can do if something is seriously wrong. For our blockchain, the only thing which can really cause a panic is importing a block which does not match the expected blocknumber. There is nothing in this case we can do to "handle" this error. If someone is telling us to execute the wrong block, then we have some larger problem with our overall system that needs to be fixed.
+正如你已经知道的，触发`panic`通常不是好事，会造成程序崩溃退出。但如果出了严重的问题，这可能是你唯一能做的事情。对于我们的区块链，唯一可能导致`panic`的是导入一个与预期区块号不匹配的区块。在这种情况下，我们无能为力来“处理”这个错误。如果有人告诉我们执行错误的区块，那么我们的整个系统就有更大的问题需要解决。
 
-However, users can also submit transactions which result in an error. For example, Alice trying to send more funds than she has in her account.
+然而，用户也可以提交导致错误的交易。例如，Alice试图发送超过她账户余额的资金。
 
-Should we panic?
+我们应该`panic`吗？
 
-Absolutely not! This is the kind of error that our runtime should be able to handle since it is expected that such errors would occur. **A block can be valid even if transactions in the block are invalid!**
+绝对不！这是我们的运行时应该能够处理的那种错误，因为这种错误是预期会发生的。**一个区块可以是有效的，即使区块中的交易是无效的！**
 
-When a transaction returns an error we should show that error to the user, and then "swallow" the result. For example:
+当交易返回错误时，我们应该向用户显示错误，然后“吞下”结果。例如：
 
 ```rust
 let _res = i_can_return_error().map_err(|e| eprintln!("{}", e));
 ```
 
-In this case, you can see that any error that `i_can_return_error` would return gets printed to the console, but otherwise, the `Result` of that function gets placed in an unused variable `_res`.
+在这种情况下，你可以看到`i_can_return_error`返回的任何错误都会被打印到控制台，但该函数的`Result`会被放置在一个未使用的变量`_res`中。
 
-You should be VERY CAREFUL when you do this. Swallowing an error is exactly the opposite of proper error handling that Rust provides to developers. However, we really do not have a choice here in our `main` function, and we fully understand what we are doing here.
+你应该非常小心地这样做。吞下错误与Rust为开发者提供的适当错误处理完全相反。然而，在我们的`main`函数中，我们真的没有选择，我们完全理解我们在这里做的事情。
 
-On real blockchain systems, users are still charged a transaction fee, even when their transaction results in an `Err`. This ensures that users are still paying a cost for triggering logic on the blockchain, even when the function fails. This is an important part of keeping our blockchain resilient to DDOS and sybil attacks.
+在真正的区块链系统中，即使交易结果为`Err`，用户仍然会被收取交易费。这确保了用户仍然为在区块链上触发逻辑支付成本，即使函数失败。这是保持我们的区块链对DDOS和sybil攻击具有弹性的重要部分。
 
-## Simulate Your First Block
+## 模拟你的第一个区块
 
-Do you think you understand everything it takes to simulate your first block?
+现在理解了模拟你的第一个区块所需的一切吗？
 
-Follow the instructions provided by the template to turn your `main` function from "Hello, World!" to actually executing your blockchain's runtime.
+按照模板提供的说明，将你的`main`函数从“Hello, World!”转换为实际执行你的区块链运行时。
 
-At the end of this step, everything should compile and run without warnings!
+在这一步结束时，一切都应该编译并运行，没有任何警告！

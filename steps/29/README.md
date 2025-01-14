@@ -1,26 +1,26 @@
-# Make Balances Pallet Generic
+# 使 Balances Pallet通用化
 
-Our goal over the next few steps will be to continually make our runtime more generic and configurable over the types we use in our Pallets.
+在接下来的几个步骤中，我们的目标是不断使我们的运行时在我们的 Pallet 使用的类型上更加通用和可配置。
 
-## Why Generic?
+## 为什么要通用化？
 
-The flexibility of generic runtime means that we can write code which works for multiple different configurations and types.
+通用运行时的灵活性意味着我们可以编写适用于多种不同配置和类型的代码。
 
-For example, up until now, we have been using `&'static str` to represent the accounts of users. This is obviously not the right thing to do, but is easy to implement for a basic blockchain tutorial like this.
+例如，到目前为止，我们一直在使用 `&'static str` 来表示用户的账户。这显然不是正确的做法，只适用于像这样的基本区块链教程。
 
-What would you need to change in order to use more traditional cryptographic public keys?
+如果要使用更传统的加密公钥，你需要改变什么？
 
-Well, currently there are definitions of the account type in both the Balances Pallet and the System Pallet. Imagine if you had many more Pallets too! Such refactoring could be very difficult, but also totally avoided if we used generic types to begin with.
+目前， Balances Pallet和系统 Pallet 中都有账户类型的定义。想象一下，如果你有更多的 Pallet 呢！这种重构可能非常困难，但如果我们从一开始就使用通用类型，就可以完全避免。
 
-Truthfully, the advantage of generic types will not be super obvious in this tutorial, but when building a blockchain SDK like the Substrate, this kind of flexibility will allow ecosystem developers to reach their full potential.
+实际上，在本教程中，通用类型的优势不会非常明显，但在构建像 Substrate 这样的区块链 SDK 时，这种灵活性将允许生态系统开发者充分发挥他们的潜力。
 
-For example, teams have used Substrate to build fully compatible Ethereum blockchains, while other teams have experimented with cutting edge cryptographic primitives. This generic framework allows both teams to be successful.
+例如，一些团队使用 Substrate 构建了完全兼容的以太坊区块链，而其他团队则尝试了更为前沿的加密原语。这种通用框架允许不同目标的团队都能取得成功。
 
-## Generic Types
+## 泛型类型
 
-You have already been lightly exposed to generic types with the `Result` type. Remember that this type is flexible to allow for you to configure what type is returned when there is `Ok` or `Err`.
+你已经通过 `Result` 类型接触过泛型类型。请记住，这种类型非常灵活，允许你配置 `Ok` 或 `Err` 时返回的类型。
 
-If we wanted to make our `Pallet` generic, it would look something like:
+如果我们想使我们的 `Pallet` 通用化，它看起来会像这样：
 
 ```rust
 pub struct Pallet<AccountId, Balance> {
@@ -28,31 +28,31 @@ pub struct Pallet<AccountId, Balance> {
 }
 ```
 
-And implementing functions on `Pallet` would look like:
+并且在 `Pallet` 上实现函数会像这样：
 
 ```rust
 impl<AccountId, Balance> Pallet<AccountId, Balance> {
-	// functions which use these types
+	// 使用这些类型的函数
 }
 ```
 
-In this case, we have not defined what the `AccountId` and `Balance` type are concretely, just that we will be storing a `BTreeMap` where the `AccountId` type is a key and `Balance` type is a value.
+在这种情况下，我们没有具体定义 `AccountId` 和 `Balance` 类型是什么，只是说我们将存储一个 `BTreeMap`，其中 `AccountId` 类型是键，`Balance` 类型是值。
 
-### Trait Constraints
+### 特征约束
 
-The `Result` generic type is extremely flexible because there are no constraints on what the `Ok` or `Err` type has to be. Every type will work for this situation.
+`Result` 泛型类型非常灵活，因为它对 `Ok` 或 `Err` 类型没有任何约束。每种类型都适用于这种情况。
 
-However, our Pallets are not that flexible. The `Balance` type cannot literally be any type. Because we have functions like `fn transfer`, we must require that the `Balance` type at least has access to the function `checked_sub`, `checked_add`, and has some representation of `zero`.
+然而，我们的 Pallet 并不是那么灵活。`Balance` 类型不能是任何类型。因为我们有像 `fn transfer` 这样的函数，我们必须要求 `Balance` 类型至少可以访问 `checked_sub`、`checked_add` 函数，并且有某种形式的 `zero` 表示。
 
-This is where the `num` crate will come in hand. From the `num` crate, you can import traits which define types which expose these functions:
+这就是 `num`  crate 派上用场的地方。从 `num` crate 中，你可以导入定义这些函数的特征：
 
 ```rust
 use num::traits::{CheckedAdd, CheckedSub, Zero};
 ```
 
-Then, where applicable, you need to constrain your generic types to have these traits.
+然后，在适用的地方，你需要约束你的通用类型以具有这些特征。
 
-That will look like:
+这看起来像：
 
 ```rust
 impl<AccountId, Balance> Pallet<AccountId, Balance>
@@ -60,42 +60,42 @@ where
 	AccountId: Ord,
 	Balance: Zero + CheckedSub + CheckedAdd + Copy,
 {
-	// functions which use these types and have access to the traits specified
+	// 使用这些类型并具有指定特征的函数
 }
 ```
 
-You will notice other types like `Copy` and `Ord` that have been added. These constrains come from using structures like the `BTreeMap`, which requires that the key type is "orderable".
+你会注意到添加了其他约束，如 `Copy` 和 `Ord`。这些约束来自于使用像 `BTreeMap` 这样的结构，它要求键类型是“可排序的”。
 
-You can actually try compiling your code without these type constraints, and the compiler will tell you which traits you are missing, and what you need to include.
+实际上，你可以尝试编译你的代码而不添加这些类型约束，编译器会告诉你缺少哪些约束，以及你需要包含哪些内容。
 
-### Instantiating a Generic Type
+### 实例化泛型类型
 
-The final piece of the puzzle is instantiating our generic types.
+最后一块拼图是实例化我们的泛型类型。
 
-Previously we could simply write:
+以前，我们可以简单地写：
 
 ```rust
 let mut balances = super::Pallet::new();
 ```
 
-But now that `Pallet` is generic, we need to concretely define those types when we instantiate it.
+但是现在 `Pallet` 是泛型的，我们需要在实例化它时具体定义这些类型。
 
-That syntax looks like:
+语法看起来像：
 
 ```rust
 let mut balances = super::Pallet::<&'static str, u128>::new();
 ```
 
-You will notice that now the types are defined wherever the generic `struct Pallet` is being instantiated. This means that you can extract the types out of your Pallets, and move them into the Runtime.
+你会注意到，现在类型是在任意可实例化泛型 `struct Pallet` 的代码中定义的。这意味着你可以将类型从 Pallet 中提取出来，并将它们移动到运行时中。
 
-## Get Generic!
+## 变得更为通用！
 
-Its time to turn your balances pallet generic.
+是时候让你的 Balances Pallet 变得通用了。
 
-1. Follow the `TODO`s in the `balances.rs` file to make `Pallet` generic.
-2. Move the type definitions for `AccountId` and `Balance` to your `main.rs`.
-3. Update your `struct Runtime` to use these types when defining the `balances::Pallet`.
+1. 按照 `balances.rs` 文件中的 `TODO` 注释，使 `Pallet` 泛型化。
+2. 将 `AccountId` 和 `Balance` 的类型定义移动到你的 `main.rs` 文件中。
+3. 更新你的 `struct Runtime`，在定义 `balances::Pallet` 时使用这些类型。
 
-To be honest, this is one of the places that developers most frequently have problems when learning Rust, which is why there is such an emphasis on teaching you and having you learn by doing these steps yourself.
+老实说，这是开发者在学习 Rust 时最常遇到问题的地方之一，这就是为什么在教学中如此强调让你自己学习和实践这些步骤的原因。
 
-Don't be afraid in this step to peek at the solution if you get stuck, but do try and learn the patterns of using generic types, and what all the syntax means in terms of what the compiler is trying to guarantee about type safety.
+如果你在这一步遇到困难，不要害怕查看解决方案，但请尝试学习使用泛型类型的模式，以及所有语法在保证类型安全方面的意义。

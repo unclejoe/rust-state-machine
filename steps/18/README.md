@@ -1,3 +1,3 @@
-# Making Your System Functional
+# 使你的系统具备实用功能
 
-You can find the solution for the previous step here.
+你可以在这里找到上一步的解决方案。
