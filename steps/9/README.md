@@ -1,3 +1,3 @@
-# Interacting with Balances
+# 与 Balances Pallet 交互
 
-You can find the solution to the previous step here.
+你可以在这里找到上一步的解决方案。

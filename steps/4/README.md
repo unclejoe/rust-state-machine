@@ -1,42 +1,42 @@
-# Creating a Balances Pallet
+### 创建一个 Banlances Pallet
 
-As mentioned earlier, at the heart of a blockchain is a state machine.
+如前所述，区块链的核心是一个状态机。
 
-We can create a very naive state machine using simple Rust abstractions, and through this help learn about Rust in the context of blockchains.
+我们可以使用简单的 Rust 抽象来创建一个非常简单的状态机，并通过这个帮助来学习 Rust 在区块链环境中的使用。
 
-We want keep our code organized, so we will not really start building in the `main.rs` file, but actually in separate Rust modules. We can think of the `main.rs` file as glue which brings everything together, and we will see that over the course of this workshop.
+我们希望保持代码的整洁，因此我们不会在 `main.rs` 文件中实际开始构建，而是在单独的 Rust 模块中进行。我们可以将 `main.rs` 文件视为将所有内容粘合在一起的胶水，我们将在贯穿整个教程中体会到这一点。
 
-"Pallet" is a term specific to the Polkadot SDK, which refers to Rust modules which contain logic specific for your blockchain runtime. We are going to start using this term here because what we build here will closely mirror what you will see with the Polkadot SDK.
+“Pallet”是 Polkadot SDK 特有的术语，指的是包含区块链运行时特定逻辑的 Rust 模块。我们这里使用这个术语与您在 Polkadot SDK 中看到的非常相似。
 
-## Balances
+## 余额
 
-Pretty much every blockchain has logic handles the balances of users on that blockchain.
+几乎每个区块链都有处理用户余额的逻辑。
 
-This Pallet will tell you: how much balance each user has, provide functions which allow users to transfer those balances, and even some low level functions to allow your blockchain system to manipulate those balances if needed. Think for example if you want to mint new tokens which don't already exist.
+这个Pallet将告诉您：每个用户有多少余额，提供允许用户转移这些余额的功能，甚至提供一些低级功能，允许您的区块链系统在需要时操作这些余额。例如，如果您想铸造新的代币种类，即使这些代币以前并不存在。
 
-This is a great starting point, and the very first Pallet we will build.
+这是一个很好的起点，也是我们将构建的第一个Pallet。
 
-## Creating a Struct
+## 创建一个结构体
 
-1. Create a new file in your `src` folder named `balances.rs`
+1. 在您的 `src` 文件夹中创建一个名为 `balances.rs` 的新文件。
 
 	```
 	touch src/balances.rs
 	```
 
-2. In this file, create a `struct`, which will act as the state and entry point for this module:
+2. 在这个文件中，创建一个 `struct`，它将作为这个模块的状态和入口点：
 
 	```rust
 	pub struct Pallet {}
 	```
 
-3. Now go back to `src/main.rs`, and import this new module, which will include all the logic inside of it:
+3. 现在回到 `src/main.rs`，并导入这个新模块，它将包含其中的所有逻辑：
 
 	```rust
 	mod balances;
 	```
 
-4. If we run your program now, you will see it still compiles and runs, but might show you some warnings like:
+4. 如果我们现在运行您的程序，您会看到它仍然可以编译和运行，但可能会显示一些警告，例如：
 
 	```
 	warning: struct `Pallet` is never constructed
@@ -50,4 +50,4 @@ This is a great starting point, and the very first Pallet we will build.
 	warning: `pr` (bin "pr") generated 1 warning
 	```
 
-	That's fine! We haven't started using our `Pallet` yet, but you can see that the Rust compiler is detecting our new code, and bringing that logic into our main program. This is the start of building our first state machine module.
+	这没关系！我们还没有开始使用我们的 `Pallet`，但您可以看到 Rust 编译器正在检测我们的新代码，并将该逻辑引入我们的主程序。这是构建我们的第一个状态机模块的开始。

@@ -1,3 +1,3 @@
-# Adding State to Our Pallet
+# 添加状态到我们的 Pallet
 
-You can find the solution for the previous step here.
+你可以在这里找到上一步的解决方案。

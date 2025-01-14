@@ -1,27 +1,27 @@
-# Adding State to Our Pallet
+# 为我们的 Pallet 添加状态
 
-So let's add some simple state to our `balances.rs` module.
+让我们为 `balances.rs` 模块添加一些简单的状态。
 
-We can do this by adding fields into our `Pallet` struct.
+我们可以通过在 `Pallet` 结构体中添加字段来实现这一点。
 
-For a balance system, we really only need to keep track of one thing: how much balance each user has in our system.
+对于余额系统，我们真正需要跟踪的只有一件事：每个用户在我们的系统中有多少余额。
 
-For this we will use a `BTreeMap`, which we can import from the Rust `std` library.
+为此，我们将使用 `BTreeMap`，它可以从 Rust 的 `std` 库中导入。
 
-Maps are simple `key -> value` objects, allowing us to define an arbitrary sized storage where we can map some user identifier (`key`) to their account balance (`value`).
+`Maps` 是简单的 `key -> value` 对象，允许我们定义一个任意大小的存储，在其中我们可以将一些用户标识符（`key`）映射到他们的账户余额（`value`）。
 
-1. Import the `BTreeMap` object.
+1. 导入 `BTreeMap` 对象。
 	```rust
 	use std::collections::BTreeMap;
 	```
 
-2. Create a `balances` field in `Pallet` using the `BTreeMap`.
+2. 在 `Pallet` 中使用 `BTreeMap` 创建一个 `balances` 字段。
 
-	For the `key`, we are using a simple static string for now. This way we can access users like `"alice"`, `"bob"`, etc... This will be changed in the future.
+	对于 `key`，我们现在使用一个简单的静态字符串。这样，我们就可以访问像 `"alice"`，`"bob"` 等用户。这将在未来改变。
 
-	For the `value`, we will use a `u128`, which is the largest natively supported type in Rust. This will allow our users to have very, very large balances if we want.
+	对于 `value`，我们将使用 `u128`，这是 Rust 中最大的原生支持类型。这将允许我们的用户拥有非常非常大的余额，如果我们愿意的话。
 
-	In the end, that looks like:
+	最后，看起来像这样：
 
 	```rust
 	pub struct Pallet {
@@ -29,7 +29,7 @@ Maps are simple `key -> value` objects, allowing us to define an arbitrary sized
 	}
 	```
 
-3. Finally, we need a way to initialize this object and its state. For this, we will implement a function on the `Pallet` called `fn new()`:
+3. 最后，我们需要一种方法来初始化这个对象及其状态。为此，我们将在 `Pallet` 上实现一个名为 `fn new()` 的函数：
 
 	```rust
 	impl Pallet {
@@ -41,16 +41,16 @@ Maps are simple `key -> value` objects, allowing us to define an arbitrary sized
 	}
 	```
 
-You can confirm at this point that everything should still be compiling, and that you haven't made any small errors. Warnings are okay.
+你可以确认此时一切应该正常编译，并且你没有犯任何小错误。警告是可以的。
 
-Next we will actually start to **use** this module.
+接下来，我们将实际开始使用这个模块。
 
-## Notes
+## 注意事项
 
-It is important to note that this is NOT how Pallet storage works with the Polkadot SDK, but just a simple emulation of the behaviors.
+需要注意的是，这不是 Polkadot SDK 中 Pallet 存储的实际实现方式，而只是对其工作效果的简单模拟。
 
-In the Polkadot SDK, there is a separate storage layer which manages a proper key-value database which holds all the information (past and present) of our blockchain system. There are abstractions which look and behave just like a `BTreeMap` in the Polkadot SDK, but the underlying logic which maintains that data is much more complex.
+在 Polkadot SDK 中，有一个单独的存储层，它管理一个适当的键值数据库，其中包含我们区块链系统的所有信息（过去和现在）。在 Polkadot SDK 中有看起来和行为都像 `BTreeMap` 的抽象，但维护这些数据的底层逻辑要复杂得多。
 
-Using simple fields in a struct keeps this project simple, and illustrates that each Pallet really is meant to manage it's own storage. However, this simplification also leads to issues if you design more complex systems where multiple pallets interact with one another.
+在结构体中使用简单字段可以保持这个项目的简单性，并说明每个托盘确实是用来管理自己的存储的。然而，这种简化也会导致问题，如果你设计更复杂的系统，其中多个托盘相互交互。
 
-We won't have any cross pallet interactions in this workshop, however, this is definitely doable with the Polkadot SDK and a proper database.
+在本教程中，我们不会有任何跨 Pallet 的交互，但是，这在 Polkadot SDK 中肯定是有实现的，并且有一个性能不错的数据库。

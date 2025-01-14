@@ -1,9 +1,9 @@
-# The Balances Pallet
+# Banlances Pallet
 
-In this section, we will build the very first logic for our state machine: a Balances Pallet.
+在这一部分中，我们将为我们的状态机构建第一个有意义的业务逻辑：一个管理账户余额的模块（Pallet）。
 
-This Pallet will manage the balances of users and allow them to transfer tokens to one another.
+这个Pallet将管理用户的账户余额，并允许他们相互转移代币。
 
-Along the way, you will learn about safe math, options, error handling, and more.
+在此过程中，你将学习到安全数学、选项、错误处理等更多知识。
 
-By the end of this section, you will have designed the logic of a simple cryptocurrency.
+在本节结束时，你将设计出一个简单加密货币的逻辑。

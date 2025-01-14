@@ -1,23 +1,23 @@
-# Introduction to the Rust State Machine
+# 介绍 Rust 状态机
 
-Welcome to the Rust State Machine tutorial.
+欢迎来到 Rust 状态机教程。
 
-This is a guided tutorial intended to teach readers the basics of Rust, Blockchain, and eventually the inner workings of the [Polkadot SDK](https://github.com/paritytech/polkadot-sdk).
+这是一个指导性教程，旨在教读者 Rust、区块链的基础知识，以及最终了解 [Polkadot SDK](https://github.com/paritytech/polkadot-sdk) 的内部工作原理。
 
-It has been my experience that the hardest part of building your first blockchain using the Polkadot SDK is navigating the advance Rust features used by [Substrate](https://github.com/paritytech/polkadot-sdk/tree/master/substrate), and understanding the underlying magic behind various macros which generate code for you.
+根据我的经验，使用 Polkadot SDK 构建你的第一个区块链最困难的部分是 [Substrate](https://github.com/paritytech/polkadot-sdk/tree/master/substrate) 使用的高级 Rust 特性，以及理解各种宏背后的底层魔法，这些宏会为你生成代码。
 
-This tutorial tries to directly address this by having you build a completely vanilla Rust project which does all the same tricks as the Polkadot SDK, so you know first hand what is going on behind the scenes.
+本教程试图通过让你构建一个完全原生的 Rust 项目来解决这个问题，这个项目与 Polkadot SDK 一样具有所有相同的技巧，因此你可以第一手了解幕后发生的事情。
 
-This tutorial does not assume the reader has much previous knowledge about Rust, Blockchain, or the Polkadot SDK, however, this tutorial does not replace a basic introduction of any of those topics.
+本教程不假设读者对 Rust、区块链或 Polkadot SDK 有很多先验知识，但是，本教程并不能替代这些主题的基础介绍。
 
-It is strongly recommended that before you begin this tutorial, that you at least have read the first 11 chapters of the [Rust Book](https://doc.rust-lang.org/book/).
+强烈建议在开始本教程之前，你至少已经阅读了 [Rust Book](https://doc.rust-lang.org/book/) 的前 11 章。
 
-You need not be an expert in all that you read, but it will help to have exposure to all the various topics like: ownership, basic data types, structures, enums, crates, error handling, traits, generic types, and tests.
+你不需要成为这些内容的专家，但了解掌握所有权、基本数据类型、结构、枚举、crates、错误处理、traits、泛型类型和测试等各种知识点会有所帮助。
 
-The tutorial is broken into sections which cover specific learning goals for the reader, and can act as good pause points if you need them.
+本教程分为几个部分，涵盖了读者的特定学习目标，并在你需要时随时回看。
 
-All of the content of this tutorial is open source, free to access, and can be found [here](https://github.com/shawntabrizi/rust-state-machine).
+本教程的所有内容都是开源的，可以免费访问，并且可以在 [这里](https://github.com/shawntabrizi/rust-state-machine) 找到。
 
-If you have suggestions which can improve the tutorial, comments, issues and pull requests are welcome.
+如果你有任何可以改进本教程的建议，欢迎评论、问题和拉取请求。
 
-Without further ado, enjoy and I hope you learn a ton!
+废话不多说，希望你能学到很多东西！
