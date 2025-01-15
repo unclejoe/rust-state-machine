@@ -1,4 +1,4 @@
-### 创建一个 Banlances Pallet
+# 创建一个 Balances Pallet
 
 如前所述，区块链的核心是一个状态机。
 
