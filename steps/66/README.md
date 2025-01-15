@@ -1,63 +1,61 @@
-# Introducing Macros
+# 引入宏
 
-If you have made it this far, then you have finished designing your simple state machine.
+如果你已经走到这一步，那么你已经完成了简单状态机的设计。
 
-At this point, our goal is to see if we can use the power of Rust macros to make future development even easier.
+此时，我们的目标是看看是否可以利用 Rust 宏的强大功能，使未来的开发更加容易。
 
-All of this is in preparation for you to work with the Polkadot SDK, which heavily relies on macros like the ones you will see here.
+所有这些都是为你准备与 Polkadot SDK 一起工作，它严重依赖于你将在这里看到的宏。
 
-## Auto Generated Code
+## 自动生成代码
 
-As mentioned earlier, Rust macros are basically code which can generate more code.
+如前所述，Rust 宏基本上是可以生成更多代码的代码。(元编程)
 
-As you can see from our simple state machine, there is a lot of boiler plate code that we could generate, following the simple patterns and structures we have designed.
+从我们的简单状态机可以看出，有很多样板代码可以按照我们设计的简单模式和结构生成。
 
-For example:
+例如：
 
-- We expect that each Pallet will expose some callable functions with `Call`.
-- We know that each `Call` will have all the same parameters of the underlying Pallet function, except the `caller`.
-- We know that each Pallet will implement `Dispatch` logic on the `Pallet` struct.
-- We know that the `Runtime` will accumulate all the `pallet::Call`s into the `RuntimeCall` outer enum.
-- We know that the `Runtime` will have logic to re-dispatch runtime level calls to the pallet level.
-- and so on...
+- 我们期望每个 Pallet 将通过 `Call` 暴露一些可调用的函数。
+- 我们知道每个 `Call` 将具有底层 Pallet 函数的所有相同参数，除了 `caller`。
+- 我们知道每个 Pallet 将在 `Pallet` 结构上实现 `Dispatch` 逻辑。
+- 我们知道 `Runtime` 将把所有 `pallet::Call` 累积到 `RuntimeCall` 外部枚举中。
+- 我们知道 `Runtime` 将具有将运行时级别的调用重新分派到 Pallet 级别的逻辑。
+- 等等。
 
-The more we abstract our Pallet and Runtime into consistent and and extensible pieces, the more we can automate, and ultimately this can provide a better developer experience.
+我们将 Pallet 和运行时抽象成一致且可扩展的部分越多，我们就越能自动化，最终这可以提供更好的开发体验。
 
-## Navigating the Macros
+## 浏览项目中的宏
 
-This tutorial is not attempting to teach you how to write these macros. That information would take a whole tutorial itself.
+本教程并不试图教你如何编写这些宏。这些信息本身就需要一个完整的教程。
 
-Instead, we are providing you with macros which should work directly with your existing code, and replace a lot of code that you have already written.
+相反，我们为你提供了可以直接与你现有的代码一起工作的宏，并替换了你已经编写的大量代码。
 
-Macros in general are "magical". If you have not written the macro yourself, there can be very little insight into what is happening underneath. In this context, the macros we are providing to you will directly replace code you have already written, so you should completely understand what is being generated, and how they work.
-
-The `macros` folder contains a `lib.rs`, which exposes the two attribute macros built for this tutorial:
+`macros` 文件夹包含一个 `lib.rs`，它公开了为本教程构建的两个属性宏：
 
 1. `#[macros::call]`
 2. `#[macros::runtime]`
 
-You can find the code for these two macros in their respective `call` and `runtime` folders.
+你可以在它们各自的 `call` 和 `runtime` 文件夹中找到这两个宏的代码。
 
-In each of these folders there are 3 files:
+在这些文件夹中的每个文件夹都有 3 个文件：
 
-1. `mod.rs` - The entry point for the macro, where code is parsed, and then generated.
-2. `parse.rs` - The parsing logic for the macro, extracting the information we need to generate code.
-3. `expand.rs` - The expansion / generation code, which will write new code for us with the data provided.
+1. `mod.rs` - 宏的入口点，在这里解析代码并生成代码。
+2. `parse.rs` - 宏的解析逻辑，提取我们生成代码所需的信息。
+3. `expand.rs` - 扩展/生成代码，它将使用提供的数据为我们编写新代码。
 
-We will go through each of these more deeply as we include the macros into our code.
+我们将在将宏集成到我们的代码中时更深入地研究这些文件。
 
-## Adding the Macros to Our Project
+## 将宏添加到我们的项目中
 
-All of the macros are contained within their own crate which will be a folder in your project.
+所有宏都包含在它们自己的 crate 中，这个 crate 将是你项目中的一个文件夹。
 
-Download the folder contents for the macros here: [download](https://download-directory.github.io?url=https://github.com/shawntabrizi/rust-state-machine/tree/gitorial/macros)
+下载宏文件夹的内容：[下载](https://download-directory.github.io?url=https://github.com/unclejoe/rust-state-machine/tree/gitorial/macros)
 
-> If that link does not work, you can extract the `macros` folder however is best for you from the source repository for this tutorial: https://github.com/shawntabrizi/rust-state-machine/tree/gitorial/
+> 如果该链接不起作用，你可以从本教程的源存储库中以最适合你的方式提取 `macros` 文件夹：https://github.com/unclejoe/rust-state-machine/tree/gitorial/
 
-Once you have the contents of the macros folder:
+一旦你有了宏文件夹的内容：
 
-1. Copy the contents into a `macros` folder in the root of your project.
-2. Update your `cargo.toml` file to include this crate into your project:
+1. 将内容复制到项目根目录下的 `macros` 文件夹中。
+2. 更新你的 `cargo.toml` 文件，将这个 crate 包含到你的项目中：
 
    ```toml
    [dependencies]
@@ -65,6 +63,6 @@ Once you have the contents of the macros folder:
    macros = { path = "./macros/" }
    ```
 
-Recompile your project, and you should see this new create and its sub-dependencies being compiled.
+重新编译你的项目，你应该会看到这个新创建的 crate 及其子依赖项正在被编译。
 
-In the next step we will actually start integrating these macros into your simple state machine.
+下一步，我们将实际开始将这些宏集成到你的简单状态机中。

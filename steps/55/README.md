@@ -1,52 +1,52 @@
-# Proof of Existence Pallet
+# 存在证明 Pallet 
 
-We have gone a long way since we built our very first Balances Pallet.
+自我们构建第一个余额 Pallet 以来，我们已经走了很长一段路。
 
-The structure of our Runtime and Pallets have evolved quite a bit since.
+自那时以来，我们的运行时和 Pallet 的结构已经发生了很大的变化。
 
-- Generic Types
-- Config Trait
-- Nested Dispatch
-- and more...
+- 泛型类型
+- Config 特性
+- 嵌套调度
+- 等等...
 
-This will be the last pallet we build for this tutorial, but we will build it knowing all of the tips and tricks we have learned so far.
+这将是我们为本教程构建的最后一个 Pallet ，但我们将在了解到目前为止所学的所有技巧和窍门的基础上构建它。
 
-The goal here is for you to ensure that all of the intricacies of Pallet development is well understood and that you are able to navigate all of the Rust code.
+这里的目标是确保您完全理解 Pallet 开发的所有复杂性，并且能够浏览所有 Rust 代码。
 
-## What is Proof of Existence?
+## 什么是存在证明？
 
-The Proof of Existence Pallet uses the blockchain to provide a secure and immutable ledger that can be used to verify the existence of a particular document, file, or piece of data at a specific point in time.
+存在证明 Pallet 使用区块链提供一个安全且不可变的账本，可用于验证特定文档、文件或数据在特定时间点的存在。
 
-Because the blockchain acts as an immutable ledger whose history cannot be changed, when some data is placed on the blockchain, it can be referenced at a future time to show that some data already existed in the past.
+由于区块链作为一个不可变的账本，其历史无法更改，因此当某些数据被放置在区块链上时，可以在将来的某个时间引用它，以表明某些数据在过去已经存在。
 
-For example, imagine you discovered a cure to cancer, but before you reveal it, you want to make sure that you can prove when you had made the discovery. To do this, you could put some sort of data on the blockchain which represents the cure. At a later date, when you get your research published and reviewed, you would be able to use the blockchain as verifiable evidence of when you first made the discovery.
+例如，假设您发现了一种治愈癌症的方法，但在您揭示它之前，您想确保您可以证明您何时发现了这种方法。为此，您可以在区块链上放置某种数据，该数据代表治愈方法。在以后的某个日期，当您的研究发表并经过审查时，您将能够使用区块链作为可验证的证据，证明您何时首次发现了这种治愈方法。
 
-Normally, you would not put the raw contents of your claim on the blockchain but a [hash](https://en.wikipedia.org/wiki/Cryptographic_hash_function) of the data, which is both smaller and obfuscates the data in your claim before you are ready to reveal it.
+通常，您不会将声明的原始内容放在区块链上，而是将数据的[哈希](https://en.wikipedia.org/wiki/Cryptographic_hash_function)放在区块链上，哈希既小又在您准备好揭示之前混淆了声明中的数据。
 
-However, for the purposes of this tutorial, we won't introduce hash functions yet.
+然而，在本教程中，我们不会介绍哈希函数。
 
-## Pallet Structure
+##  Pallet 结构
 
-The `BTreeMap` is again the best tool to use for storing data in this Pallet. However, you will notice that the construction of the storage is a bit different than before. Rather than having a map from accounts to some data, we will actually map the content we want to claim to the user who owns it.
+`BTreeMap` 再次成为在这个 Pallet 中存储数据的最佳工具。但是，您会注意到存储的构建方式与以前有所不同。我们实际上将映射我们想要声明的内容到拥有它的用户，而不是从账户到某些数据的映射。
 
-This construction of `content -> account` allows an account to be the owner of multiple different claims, but having each claim only be owned by one user.
+这种`内容 -> 账户`的构建允许一个账户拥有多个不同的声明，但每个声明只能由一个用户拥有。
 
-## Create Your Pallet
+## 创建您的 Pallet 
 
-Let's start to create this pallet:
+让我们开始创建这个 Pallet ：
 
-1. Create a new file for your Proof of Existence Pallet.
+1. 为您的存在证明 Pallet 创建一个新文件。
 
 	```bash
 	touch src/proof_of_existence.rs
 	```
 
-2. Copy the contents from the template into your new file.
+2. 将模板内容复制到您的新文件中。
 
-3. Complete the `TODO`s to add a storage to your new pallet and allow it to be initialized.
+3. 完成`TODO`以向新 Pallet 添加存储并允许其初始化。
 
-4. In your `main.rs` file, import the `proof_of_existence` module.
+4. 在您的`main.rs`文件中，导入`proof_of_existence`模块。
 
-Make sure that everything compiles after you complete these steps.
+确保在完成这些步骤后一切都能编译通过。
 
-Compiler warnings about "never read/used" are okay.
+忽略编译器关于“从未读取/使用”的警告。

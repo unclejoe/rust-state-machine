@@ -1,51 +1,51 @@
-# Nested Dispatch
+# 嵌套调度
 
-Now that we have defined Pallet level dispatch logic in the Pallet, we should update our Runtime to take advantage of that logic.
+现在我们已经在 Pallet 中定义了 Pallet 级别的调度逻辑，我们应该更新我们的 Runtime 以利用该逻辑。
 
-After this, whenever the Pallet logic is updated, the Runtime dispatch logic will also automatically get updated and route calls directly. This makes our code easier to manage, and prevent potential errors or maintenance in the future.
+之后，每当 Pallet 逻辑更新时，Runtime 调度逻辑也会自动更新并直接路由调用。这使得我们的代码更易于管理，并防止未来潜在的错误或维护问题。
 
-## Nested Calls
+## 嵌套调用
 
-The Balances Pallet now exposes its own list of calls in `balances::Call`. Rather than list them all again in the Runtime, we can use a nested enum to route our calls correctly.
+Balances Pallet 现在在 `balances::Call` 中公开了自己的调用列表。我们不再需要在 Runtime 中再次列出所有这些调用，而是可以使用嵌套枚举来正确路由我们的调用。
 
-Imagine the following construction:
+想象一下以下结构：
 
 ```rust
 pub enum RuntimeCall {
-	Balances(balances::Call<Runtime>),
+    Balances(balances::Call<Runtime>),
 }
 ```
 
-In this case, we have a variant `RuntimeCall::Balances`, which itself contains a type `balances::Call`. This means we can access all the calls exposed by `balances:Call` under this variant. As we create more pallets or extend our calls, this nested structure will scale very well.
+在这种情况下，我们有一个变体 `RuntimeCall::Balances`，它本身包含一个类型 `balances::Call`。这意味着我们可以在这个变体下访问 `balances::Call` 公开的所有调用。随着我们创建更多的 Pallet 而扩展我们的调用，这种嵌套结构将使整体架构得到很好地扩展。
 
-We call the `RuntimeCall` an "outer enum", and the `balances::Call` an "inter enum". This construction of using outer and inter enums is very common in the Polkadot SDK.
+我们称 `RuntimeCall` 为“外部枚举”，`balances::Call` 为“内部枚举”。这种使用外部和内部枚举的结构在 Polkadot SDK 中非常常见。
 
-## Re-Dispatching to Pallet
+## 重新调度到 Pallet
 
-Our current `dispatch` logic directly calls the functions in the Pallet. As we mentioned, having this logic live outside of the Pallet can increase the burden of maintenance or errors.
+我们当前的 `dispatch` 逻辑直接调用 Pallet 中的函数。如前所述，将此逻辑放在 Pallet 之外会增加维护或错误的负担。
 
-But now that we have defined Pallet level dispatch logic in the Pallet itself, we can use this to make the Runtime dispatch more extensible.
+但是现在我们已经在 Pallet 本身中定义了 Pallet 级别的调度逻辑，我们可以使用它来使 Runtime 调度更具可扩展性。
 
-To do this, rather than calling the Pallet function directly, we can extract the inner call from the `RuntimeCall`, and then use the `balances::Pallet` to dispatch that call to the appropriate logic.
+为此，我们不再直接调用 Pallet 函数，而是可以从 `RuntimeCall` 中提取内部调用，然后使用 `balances::Pallet` 将该调用分派到适当的逻辑。
 
-That would look something like:
+这看起来像这样：
 
 ```rust
 match runtime_call {
-	RuntimeCall::Balances(call) => {
-		self.balances.dispatch(caller, call)?;
-	},
+    RuntimeCall::Balances(call) => {
+        self.balances.dispatch(caller, call)?;
+    },
 }
 ```
 
-Here you can see that the first thing we do is check that the call is a `Balances` variant, then we extract from it the `call` which is a `balances::Call` type, and then we use `self.balances` which is a `balances::Pallet` to dispatch the `balances::Call`.
+在这里，你可以看到我们首先检查调用是否是 `Balances` 变体，然后从它提取 `call`，这是一个 `balances::Call` 类型，然后我们使用 `self.balances`，这是一个 `balances::Pallet`，来分派 `balances::Call`。
 
-## Updating Your Block
+## 更新你的块
 
-Since we have updated the construction of the `RuntimeCall` enum, we will also need to update our `Block` construction in `fn main`. Nothing magical here, just needing to construct a nested enum using both `RuntimeCall::Balances` and `balances::Call::Transfer`.
+由于我们更新了 `RuntimeCall` 枚举的结构，我们还需要更新 `fn main` 中的 `Block` 构造。这里没有什么神奇的，只是需要使用 `RuntimeCall::Balances` 和 `balances::Call::Transfer` 构造一个嵌套枚举。
 
-## Enable Nested Dispatch
+## 启用嵌套调度
 
-Now is the time to complete this step and glue together Pallet level dispatch with the Runtime level dispatch logic.
+现在是时候完成这一步，将 Pallet 级别的调度与 Runtime 级别的调度逻辑粘合在一起。
 
-Follow the `TODO`s provided in the template to get your full end to end dispatch logic running. By the end of this step there should be no compiler warnings.
+按照模板中提供的 `TODO` 完成你的端到端调度逻辑。到这一步结束时，应该没有编译器警告。

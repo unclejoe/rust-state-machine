@@ -1,7 +1,7 @@
-# Rust Macros
+# Rust 宏
 
-In this section, we will introduce Rust Macros to our project to reduce boilerplate code and automate implementations.
+在这一部分，我们将向项目中引入 Rust 宏，以减少样板代码并自动化实现。
 
-You can imagine that continuing to add new Pallets to our runtime would lead to a lot of similar or redundant code.
+你可以想象，继续向我们的运行时添加新的 Pallets 会导致大量相似或冗余的代码。
 
-By the end of this section, you will see how Rust Macros can automatically generate the code we have been writing, and why the Polkadot SDK uses this technique to improve developer experience and output.
+在本节结束时，你将看到 Rust 宏如何自动生成我们一直在编写的代码，以及为什么 Polkadot SDK 使用这种技术来提高开发人员的体验和输出。

@@ -1,7 +1,7 @@
-# The Proof of Existence Pallet
+# 存在性证明 Pallet 
 
-In this section, we will create a Proof of Existence Pallet.
+在本节中，我们将创建一个存在性证明 Pallet 。
 
-We will take advantage of all the refactoring we have done so far to make it very simple to integrate this new Pallet into our existing Runtime.
+我们将利用迄今为止所做的所有重构工作，使这个新 Pallet 能够非常简单地集成到我们现有的运行时中。
 
-There are no new concepts to learn in this section, however it will test that you understand and can reproduce all the steps and concepts learned in the previous sections.
+本节没有新的概念需要学习，但是它将测试您是否理解并能够重现之前章节中学到的所有步骤和概念。

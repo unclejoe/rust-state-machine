@@ -1,3 +1,3 @@
-# Add PoE Extrinsics to Blocks
+# 在区块中添加 PoE 外部交易
 
-You can find the solution to the previous step here.
+你可以在这里找到上一步的解决方案。

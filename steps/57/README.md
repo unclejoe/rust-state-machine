@@ -1,24 +1,24 @@
-# Proof Of Existence Functions
+# 存在证明功能
 
-The Proof of Existence Pallet is quite simple, so let's build out the logic needed.
+存在证明 Pallet 非常简单，现在让我们构建所需的逻辑。
 
-## Get Claim
+## 获取声明
 
-Our Pallet has a simple storage map from some claim content to the owner of that claim.
+我们的 Pallet 有一个简单的存储映射，从一些声明内容到该声明的所有者。
 
-The `get_claim` function should act as a simple read function returning the `T::AccountId` of the owner, if there is any. In the case we query a claim which has no owner, we should return `None`.
+`get_claim` 函数应该作为一个简单的读取函数，返回所有者的 `T::AccountId`，如果存在的话。如果我们查询的声明没有所有者，我们应该返回 `None`。
 
-This is not a function that a user would call from an extrinsic, but is useful for other parts of your state machine to access the data in this Pallet.
+这不是用户从外部调用的函数，但对于状态机的其他部分访问此 Pallet 中的数据非常有用。
 
-## Create Claim
+## 创建声明
 
-Any user can add a new claim to the Proof of Existence Pallet.
+任何用户都可以向存在证明 Pallet 中添加新的声明。
 
-The only thing that is important is that we check that the claim has not already been made by another user.
+唯一重要的是，我们检查该声明是否尚未被其他用户提出。
 
-Each claim should only have one owner, and whoever makes the claim first gets priority.
+每个声明应该只有一个所有者，并且谁先提出声明谁就优先。
 
-You can check if some claim is already in the `claims` storage using the `contains_key` api:
+您可以使用 `contains_key` API 检查某个声明是否已经存在于 `claims` 存储中：
 
 ```rust
 if self.claims.contains_key(&claim) {
@@ -26,25 +26,23 @@ if self.claims.contains_key(&claim) {
 }
 ```
 
-## Revoke Claim
+## 撤销声明
 
-Data on the blockchain is not free, and in fact is very expensive to maintain. Giving users the ability to clean up their data is not only good, but encouraged. If a user no longer has a need to store their claim on chain, they should clean it up.
+区块链上的数据不是免费的，实际上维护成本非常高。让用户能够清理他们的数据不仅是好的，而且是鼓励的。如果用户不再需要在链上存储他们的声明，他们应该清理它。
 
-Furthermore, the history of the blockchain is immutable. Even if the data about a claim does not exist in the "current state", it can be shown to have existed in the past.
+此外，区块链的历史是不可变的。即使关于声明的数据不存在于“当前状态”中，也可以证明它在过去存在过。
 
-Keeping things in the current state just makes querying for information easier.
+将事物保持在当前状态只是为了使查询信息更容易。
 
-To revoke a claim, we need to check two things:
+要撤销声明，我们需要检查两件事：
 
-1. The the claim exists.
-2. That the person who wants to revoke the claim is the owner of that claim.
+1. 声明是否存在。
+2. 想要撤销声明的人是否是该声明的所有者。
 
-You should be able to handle all of this logic by calling the `get_claim` function and using `ok_or` to return an error when the claim does not exist. If the claim does exist, you should be able to directly extract the owner from the state query.
+您应该能够通过调用 `get_claim` 函数并使用 `ok_or` 在声明不存在时返回错误来处理所有这些逻辑。如果声明确实存在，您应该能够直接从状态查询中提取所有者。
 
-## Build Your Functions
+## 构建您的函数
 
-Complete the `TODO`s outlined in the template.
+完成模板中概述的 `TODO`。
 
-Afterward, create a `basic_proof_of_existence` test to check that all your functions are working as expected.
-
-This includes both the success and possible error conditions of your Pallet.
+之后，创建一个 `basic_proof_of_existence` 测试，以检查您的所有函数是否按预期工作。

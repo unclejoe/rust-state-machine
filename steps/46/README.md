@@ -1,26 +1,26 @@
-# Dispatching Calls
+# 分发调用
 
-We have built our `execute_block` logic depending on the `dispatch` logic we have not implemented yet.
+我们已经根据尚未实现的`dispatch`逻辑构建了`execute_block`逻辑。
 
-Let's do that.
+让我们来实现它。
 
-## Adding Our Calls
+## 添加我们的调用
 
-Dispatch logic is all about routing a user's extrinsic to the proper Pallet function. So far, the only user callable function we have created is the `transfer` function in the Balances Pallet.
+分发逻辑的全部内容是将用户的外部调用路由到适当的 Pallet 函数。到目前为止，我们创建的唯一用户可调用函数是`Balances` Pallet 中的`transfer`函数。
 
-So let's add that call to our `RuntimeCall` enum.
+因此，让我们将该调用添加到`RuntimeCall`枚举中。
 
-Our `transfer` function expects 3 inputs:
+我们的`transfer`函数需要三个输入：
 
-- `caller`: The account calling the transfer function, and whose balance will be reduced.
-- `to`: The account where the funds will be sent.
-- `amount`: The amount of funds to transfer.
+- `caller`：调用转移函数的账户，其余额将被减少。
+- `to`：资金将被发送到的账户。
+- `amount`：要转移的资金数量。
 
-However, remember that our `dispatch` logic already has information about the `caller` which is coming from the `Extrinsic` in the `Block`. So we do not need this data again in the `RuntimeCall`.
+然而，请记住，我们的`dispatch`逻辑已经从`Block`中的`Extrinsic`获得了`caller`信息，因此我们在`RuntimeCall`中不需要再次提供此数据。
 
-In fact, every `Call` in our runtime should omit the `caller`, and know that it is being provided by our `dispatch` logic.
+实际上，我们运行时中的每个`Call`都应该省略`caller`，并知道它是由我们的`dispatch`逻辑提供的。
 
-So when adding a new variant to `RuntimeCall`, it should look something like:
+因此，在向`RuntimeCall`添加新变体时，它应该看起来像这样：
 
 ```rust
 pub enum RuntimeCall {
@@ -28,13 +28,13 @@ pub enum RuntimeCall {
 }
 ```
 
-A user submitting an extrinsic to our state machine can use this enum variant to specify which function they want to call (`transfer`), and the parameters needed for that call.
+用户向我们的状态机提交外部调用时，可以使用此枚举变体来指定他们想要调用的函数（`transfer`），以及该调用所需的参数。
 
-## Dispatch Logic
+## 分发逻辑
 
-The core logic in the `dispatch` function is a simple `match` statement.
+`dispatch`函数中的核心逻辑是一个简单的`match`语句。
 
-Basically, given some `RuntimeCall`, we need to match on the variant being provided to us, and then pass the appropriate parameters to the correct Pallet function. As mentioned before, `dispatch` already has access to the `caller` information, so the final logic is as simple as:
+基本上，给定一些`RuntimeCall`，我们需要匹配提供给我们的变体，然后将适当的参数传递给正确的 Pallet 函数。如前所述，`dispatch`已经可以访问`caller`信息，因此最终的逻辑非常简单：
 
 ```rust
 match runtime_call {
@@ -44,12 +44,12 @@ match runtime_call {
 }
 ```
 
-Dispatch logic really is that simple!
+分发逻辑真的就是这么简单！
 
-Note that we propagate up any errors returned by our function call with the `?` operator. This is important if you want to see the error messages that we set up in the `execute_block` logic.
+请注意，我们使用`?`操作符传播函数调用返回的任何错误。这很重要，如果你想看到我们在`execute_block`逻辑中设置的错误消息。
 
-## Write Your Dispatch Logic
+## 编写你的分发逻辑
 
-Follow the `TODO`s provided in the template to build your `RuntimeCall` and complete your `dispatch` logic.
+按照模板中的`TODO`来构建你的`RuntimeCall`并完成你的`dispatch`逻辑。
 
-Your code should still compile with some "never constructed/used" warnings. Just one more step and we will get rid of all those warnings!
+你的代码应该仍然可以编译，但会有一些“从未构建/使用”的警告。再完成一步，我们将消除所有这些警告！

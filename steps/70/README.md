@@ -1,52 +1,52 @@
-# Adding Call Macro to PoE
+# 在 PoE 中添加调用宏
 
-We have already seen the `#[macros::call]` macro help clean up the Balances Pallet.
+我们已经看到了 `#[macros::call]` 宏如何帮助清理 Balances Pallet。
 
-Let's also add it to the Proof of Existence Pallet, where there is even more code that can be eliminated.
+现在，让我们也将其添加到 Proof of Existence Pallet 中，这里有更多的代码可以被消除。
 
-## Add Your Call Macro
+## 添加你的调用宏
 
-We basically need to repeat the steps that we did for the Balances Pallet here:
+我们基本上需要在这里重复我们为 Balances Pallet 所做的步骤：
 
-1. Move your `create_claim` and `revoke_claim` functions into its own `impl<T: Config> Pallet<T>`.
-2. Add the `#[macros::call]` attribute over this new `impl<T: Config> Pallet<T>`.
-3. Delete your existing `enum Call`.
-4. Delete your existing implementation of `Dispatch for Pallet`.
-5. Then, in your `main.rs` file, change instances of:
-	- `proof_of_existence::Call::CreateClaim` to `proof_of_existence::Call::create_claim` using `snake_case`.
-	- `proof_of_existence::Call::RevokeClaim` to `proof_of_existence::Call::revoke_claim` using `snake_case`.
+1. 将你的 `create_claim` 和 `revoke_claim` 函数移动到它自己的 `impl<T: Config> Pallet<T>` 中。
+2. 在这个新的 `impl<T: Config> Pallet<T>` 上添加 `#[macros::call]` 属性。
+3. 删除你现有的 `enum Call`。
+4. 删除你现有的 `Dispatch for Pallet` 实现。
+5. 然后，在你的 `main.rs` 文件中，将实例从：
+    - `proof_of_existence::Call::CreateClaim` 更改为 `proof_of_existence::Call::create_claim` 使用 `snake_case`。
+    - `proof_of_existence::Call::RevokeClaim` 更改为 `proof_of_existence::Call::revoke_claim` 使用 `snake_case`。
 
-Check that everything is compiling and running just as before.
+检查一切是否编译和运行正常。
 
-## Expand your Rust Code
+## 扩展你的 Rust 代码
 
-Let's take the opportunity to show you how you can peek deeper into what the macros are doing.
+让我们借此机会向你展示如何更深入地了解宏正在做什么。
 
-Rust provides the command `cargo expand` which allows you to output the generated rust code after all macros have been applied to your project.
+Rust 提供了 `cargo expand` 命令，允许你在项目中应用所有宏后输出生成的 Rust 代码。
 
-To install `cargo expand`:
+要安装 `cargo expand`：
 
 ```bash
 cargo install cargo-expand
 ```
 
-Then, run the following command:
+然后，运行以下命令：
 
 ```bash
 cargo expand > out.rs
 ```
 
-This will output your project's generated code into a file `out.rs`.
+这将把你的项目生成的代码输出到 `out.rs` 文件中。
 
-Then take a look at that file.
+然后查看该文件。
 
-Here are some things you should notice:
+你应该注意到以下几点：
 
-- All of your different `mod` files have been combined together into a single file with your `main.rs`.
-- You will see that our final Pallet code has all of the `Call` and `Dispatch` logic generated!
-- You might notice that the very first `#[derive(Debug)]` macro has generated code
+- 你所有的不同 `mod` 文件都被合并到了一个文件中，与你的 `main.rs` 在一起。
+- 你会看到我们最终的 Pallet 代码已经生成了所有的 `Call` 和 `Dispatch` 逻辑！
+- 你可能会注意到，第一个 `#[derive(Debug)]` 宏已经生成了代码：
 
-	```rust
+    ```rust
     #[automatically_derived]
     impl<T: ::core::fmt::Debug + Config> ::core::fmt::Debug for Pallet<T>
     where
@@ -57,29 +57,32 @@ Here are some things you should notice:
             ::core::fmt::Formatter::debug_struct_field1_finish(f, "Pallet", "claims", &&self.claims)
         }
     }
-	```
-- You might even notice that other smaller macros like `vec![]` have changed:
+    ```
 
-	```rust
-	extrinsics: <[_]>::into_vec(
-		#[rustc_box]
-		::alloc::boxed::Box::new([
-			// stuff
-		])
-	)
-	```
-- And `println!()` :
+- 你可能还会注意到其他较小的宏，如 `vec![]` 也发生了变化：
 
-	```rust
-	{
-		::std::io::_print(format_args!("{0:#?}\n", runtime));
-	};
-	```
-- etc...
+    ```rust
+    extrinsics: <[_]>::into_vec(
+        #[rustc_box]
+        ::alloc::boxed::Box::new([
+            // stuff
+        ])
+    )
+    ```
 
-There are two main takeaways for you:
+- 以及 `println!()`：
 
-1. Macros ultimately follow all the same rules as regular Rust code, because it does generate regular Rust code. They feel magical, but there is really nothing magic about them.
-2. Macros are an important part of the Rust ecosystem, and heavily used to improve developer experience and code quality.
+    ```rust
+    {
+        ::std::io::_print(format_args!("{0:#?}\n", runtime));
+    };
+    ```
 
-If you ever use externally developed macros, and you want to look closer at what is going on, `cargo expand` can be a useful tool for you to better understand some of the hidden architectural details of a project. As you jump into the Polkadot SDK, I recommend you continue to use this tool to enhance your learning and understanding.
+- 等等。
+
+这里有两个主要的收获：
+
+1. 宏最终遵循与常规 Rust 代码相同的规则，因为它确实生成了常规 Rust 代码。它们感觉很神奇，但实际上并没有什么神奇之处。
+2. 宏是 Rust 生态系统的重要组成部分，广泛用于提高开发体验和代码质量。
+
+如果你使用外部开发的宏，并且想更仔细地了解正在发生的事情，`cargo expand` 可以是一个有用的工具，帮助你更好地理解项目的一些隐藏架构细节。当你跳入 Polkadot SDK 时，我建议你继续使用这个工具来增强你的学习和理解。

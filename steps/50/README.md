@@ -1,31 +1,31 @@
-# Pallet Level Dispatch
+#  Pallet 级别调度
 
-We want to make our code more modular and extensible.
+我们希望使代码更加模块化和可扩展。
 
-Currently, all dispatch happens through the `RuntimeCall`, which is hardcoding dispatch logic for each of the Pallets in our system.
+目前，所有的调度都是通过 `RuntimeCall` 进行的，这意味着我们系统中每个 Pallet 的调度逻辑都是硬编码的。
 
-What we would prefer is for Pallet level dispatch logic to live in the Pallet itself, and our Runtime taking advantage of that. We have already seen end to end what it takes to set up call dispatch, so let's do it again at the Pallet level.
+我们更希望 Pallet 级别的调度逻辑能够在 Pallet 本身中实现，而我们的运行时能够利用这一点。我们已经看到了端到端设置调用调度所需的一切，所以让我们在 Pallet 级别再次进行。
 
-## Pallet Call
+##  Pallet 调用
 
-To make our system more extensible, we want to keep all the calls for a pallet defined at the pallet level.
+为了使我们的系统更具可扩展性，我们希望将 Pallet 的所有调用定义在 Pallet 级别。
 
-For this, we define an `enum Call` in our Balances pallet, and just like before, we introduce a new enum variant representing the function that we want to call.
+为此，我们在 `Balances`  Pallet 中定义了一个 `enum Call`，并像之前一样引入了一个新的枚举变量来表示我们想要调用的函数。
 
-Note that this enum needs to be generic over `T: Config` because we need access to the types defined by our configuration trait!
+请注意，这个枚举需要对 `T: Config` 进行泛型处理，因为我们需要访问由 Config trait 定义的类型！
 
-## Pallet Dispatch
+##  Pallet 调度
 
-You will also notice in the template, we have included the shell for you to implement Pallet level dispatch.
+您还会注意到在模板中，我们已经为您提供了实现 Pallet 级别调度的框架。
 
-Everything should look the same as the Runtime level dispatch, except the `type Call` is the Pallet level call we just created.
+一切看起来都与运行时级别的调度相同，只是 `type Call` 是我们刚刚创建的 Pallet 级别的调用。
 
-Just like before, you simply need to match the `Call` variant with the appropriate function, and pass the parameters needed by the function.
+就像之前一样，您只需将 `Call` 变量与相应的函数匹配，并传递函数所需的参数。
 
-## Create Your Pallet Level Dispatch
+## 创建您的 Pallet 级别调度
 
-Follow the `TODO`s in the template to complete the logic for Pallet level dispatch.
+按照模板中的 `TODO` 完成 Pallet 级别调度的逻辑。
 
-The "never constructed" warning for the `Transfer` variant is okay.
+`Transfer` 变量的“从未构造”警告是正常的。
 
-In the next step, we will use this logic to improve our dispatch logic in our Runtime.
+下一步，我们将使用这个逻辑来改进我们在运行时的调度逻辑。

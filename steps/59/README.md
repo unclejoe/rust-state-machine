@@ -1,16 +1,16 @@
-# Add Proof of Existence Dispatch
+# 添加存在性证明调度
 
-We have already established the nested dispatch pipeline for Pallets in the `Runtime`.
+我们已经在 `Runtime` 中为 Pallet 建立了嵌套的调度管道。
 
-Let's build Pallet level dispatch logic for the Proof of Existence to take advantage of that.
+让我们利用这一点为存在性证明构建 Pallet 级别的调度逻辑。
 
-## Create Pallet Level Dispatch
+## 创建 Pallet 级别的调度
 
-There is nothing new here, but we have left more for you to fill out than before.
+这里没有什么新鲜的，但我们比以前留下了更多的内容让你填写。
 
-1. Create the variants for `CreateClaim` and `RevokeClaim` for your `Call` enum.
-2. Implement the `Dispatch` trait for your `Pallet`.
+1. 为你的 `Call` 枚举创建 `CreateClaim` 和 `RevokeClaim` 的变体。
+2. 为你的 `Pallet` 实现 `Dispatch` 特征。
 
-If you get stuck, try not to look at the solution provided here, but instead look at what you did in the Balances Pallet. Everything we have done here, we have already done in the past. This is an opportunity to catch where you may have outstanding questions or misunderstandings.
+如果你遇到困难，尽量不要查看这里提供的解决方案，而是看看你在Balances Pallet 上是怎么做的。我们在这里所做的一切，我们过去都已经做过了。这是一个机会，可以发现你可能有疑问或误解的地方。
 
-Don't worry about compiler warnings like "never used/constructed".
+不要担心像“从未使用/构造”这样的编译器警告。

@@ -1,3 +1,3 @@
-# Adding Call Macro to PoE
+# 在 PoE 中添加调用宏
 
-You can find the solution to the previous step here.
+你可以在这里找到上一步的解决方案。

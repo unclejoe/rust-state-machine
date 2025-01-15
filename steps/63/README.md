@@ -1,11 +1,11 @@
-# Add PoE Extrinsics to Blocks
+# 在区块中添加 PoE 外部交易
 
-The Proof Of Existence Pallet is fully integrated into your runtime at this point, but we aren't really using it.
+此时，存在性证明 Pallet 已完全集成到您的运行时中，但我们并没有真正使用它。
 
-Create some new `Block`s in your `fn main()` to test out the functionality of the Proof of Existence Pallet.
+在 `fn main()` 中创建一些新的 `Block` 来测试存在性证明 Pallet 的功能。
 
-Be creative, and even feel free to introduce some extrinsics which will trigger errors based on the logic of your pallets.
+发挥创意，甚至可以引入一些外部交易，这些外部交易会根据您 Pallet 的逻辑触发错误。
 
-Don't forget to increment your block number and actually call `execute_block` for each of those blocks.
+不要忘记增加您的块编号，并为每个块实际调用 `execute_block`。
 
-Take a look at the final output and check that the state of your machine makes sense!
+查看最终输出并检查您的机器状态是否合理！

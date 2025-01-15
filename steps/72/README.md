@@ -1,56 +1,56 @@
-# Use the Runtime Macro
+# 使用 runtime 宏
 
-Finally, let's add the `#[macros::runtime]` macro to our `main.rs` file, and really clean up a ton of boilerplate code.
+最后，让我们在 `main.rs` 文件中添加 `#[macros::runtime]` 宏，以消除大量的样板代码。
 
-## Runtime Macro
+## 运行时宏
 
-The purpose of the `#[macros::runtime]` macro is to get rid of all of the boilerplate function we implemented for the `Runtime`, including `fn new()` and `fn execute_block()`. Similar to the `Call` macro, it also generates the `enum RuntimeCall` and all the `dispatch` logic for re-dispatching to pallets.
+`#[macros::runtime]` 宏的目的是消除我们为 `Runtime` 实现的所有样板函数，包括 `fn new()` 和 `fn execute_block()`。与 `Call` 宏类似，它还生成了 `enum RuntimeCall` 和所有重新分派到 Pallet 的 `dispatch` 逻辑。
 
-We apply the `#[macros::runtime]` attribute on top of the main `struct Runtime` object.
+我们将 `#[macros::runtime]` 属性应用于主 `struct Runtime` 对象的顶部。
 
-### Parse
+### 解析
 
-In order to generate the code we want, we need to keep track of:
+为了生成我们想要的代码，我们需要跟踪以下信息：
 
-1. The name of the `struct` representing our Runtime. Usually this is `Runtime`, but we provide flexibility to the developer.
-2. The list of Pallets included in our `Runtime`
-	1. Their name, as specified by the user.
-	2. The specific type for their `Pallet`, for example `balances::Pallet` vs `proof_of_existence::Pallet`.
+1. 表示我们运行时的 `struct` 的名称。通常这是 `Runtime`，但我们为开发者提供了灵活性。
+2. 包含在我们 `Runtime` 中的 Pallet 列表：
+   1. 它们的名称，由用户指定。
+   2. 它们的具体类型，例如 `balances::Pallet` 与 `proof_of_existence::Pallet`。
 
-All of this information is tracked in the `RuntimeDef` struct.
+所有这些信息都记录在 `RuntimeDef` 结构体中。
 
-We are also checking that our `Runtime` definition always contains the System Pallet, and does so as the first pallet in our `Runtime` definition. We will explain more about the assumption of the macros below.
+我们还检查了我们的 `Runtime` 定义是否始终包含 System Pallet ，并且作为我们 `Runtime` 定义中的第一个 Pallet 。我们将在下面解释宏的假设。
 
-### Expand
+### 展开
 
-Once we have parsed all the data we need, we just need to generate the code that we expect.
+一旦我们解析了所有需要的数据，我们只需要生成我们期望的代码。
 
-Starting with `let runtime_impl = quote!`, you will see the entire `impl Runtime` code block has been swallowed into the macro. Since we know all the pallets in your `Runtime`, we can automatically implement functions like `new()`. The `execute_block` function does not take advantage of any of the parsed data, but the code is completely boilerplate, so we hide it away.
+从 `let runtime_impl = quote!` 开始，你会看到整个 `impl Runtime` 代码块都被宏吞噬了。由于我们知道你的 `Runtime` 中的所有 Pallet ，我们可以自动实现像 `new()` 这样的函数。`execute_block` 函数没有利用任何解析的数据，但代码完全是样板，所以我们将其隐藏起来。
 
-Then we have another code block being generated with `let dispatch_impl = quote!` which is the `enum RuntimeCall` and the implementation of `Dispatch for Runtime`.
+然后我们有另一个代码块，使用 `let dispatch_impl = quote!` 生成，这是 `enum RuntimeCall` 和 `Dispatch for Runtime` 的实现。
 
-Again, due to the quirks of using macros, our `RuntimeCall` enum will have `snake_case` variants which exactly match the name of the fields in the `Runtime` struct.
+同样，由于使用宏的怪癖，我们的 `RuntimeCall` 枚举将具有与 `Runtime` 结构体中的字段名称完全匹配的 `snake_case` 变体。
 
-## Macro Assumptions
+## 宏假设
 
-One of the assumptions programmed into these macros is the existence of the System Pallet. For example, in the `execute_block` logic, we need access to both `system.inc_block_number` and `system.inc_nonce`.
+这些宏编程的假设之一是 System Pallet 的存在。例如，在 `execute_block` 逻辑中，我们需要访问 `system.inc_block_number` 和 `system.inc_nonce`。
 
-Some macro level assumptions are intentional, and actually define the architectural decisions of the framework designing those macros. This is the case with the System Pallet, since so much of a blockchain framework depends on a consistent meta-layer.
+一些宏级别的假设是有意的，实际上定义了设计这些宏的框架的架构决策。System Pallet 就是这种情况，因为区块链框架的许多部分都依赖于一致的元层。
 
-Other assumptions exist just because it is easier to write the macro if the assumption is made.
+其他假设的存在仅仅是因为如果做出这些假设，宏的编写会更容易。
 
-The main takeaway here is that macros can almost always continue to improve, providing better and better user experiences for developers. It just needs someone to identify what improvements need to be made, and someone else to program those improvements into the low level macro code.
+这里的主要收获是，宏几乎总是可以不断改进，为开发者提供越来越好的用户体验。它只需要有人识别出需要做出哪些改进，然后有人将这些改进编程到低级宏代码中。
 
-## Add the Runtime Macro
+## 添加运行时宏
 
-Let's finally go through the steps to add the `#[macros::runtime]` attribute to your `Runtime`.
+让我们最后一步一步地将 `#[macros::runtime]` 属性添加到你的 `Runtime` 中。
 
-1. In `main.rs`, add `#[macros::runtime]` on top of your `pub struct Runtime`.
-2. Remove the entire `impl Runtime` code block.
-3. Remove the entire `enum RuntimeCall`.
-4. Remove the entire implementation of `Dispatch for Runtime`.
-5. Update instances of the `RuntimeCall` enum to use `snake_case`:
-	- Change `RuntimeCall::Balances` to `RuntimeCall::balances`.
-	- Change `RuntimeCall::ProofOfExistence` to `RuntimeCall::proof_of_existence`.
+1. 在 `main.rs` 中，在你的 `pub struct Runtime` 顶部添加 `#[macros::runtime]`。
+2. 删除整个 `impl Runtime` 代码块。
+3. 删除整个 `enum RuntimeCall`。
+4. 删除整个 `Dispatch for Runtime` 的实现。
+5. 更新 `RuntimeCall` 枚举的实例以使用 `snake_case`：
+   - 将 `RuntimeCall::Balances` 更改为 `RuntimeCall::balances`。
+   - 将 `RuntimeCall::ProofOfExistence` 更改为 `RuntimeCall::proof_of_existence`。
 
-And that's it! You have now completed the full tutorial for building a simple rust state machine. 🎉
+就是这样！你现在已经完成了构建简单 Rust 状态机的完整教程。🎉

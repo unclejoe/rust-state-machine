@@ -1,3 +1,3 @@
-# Pallet Level Dispatch
+# Pallet 级别调度
 
-You can find the solution for the previous step here.
+你可以在这里找到上一步的解决方案。
